@@ -70,9 +70,10 @@ def api_send_request(method:str='GET',
     if not isinstance(headers, dict):
         raise ValueError('Unexpected headers value')
 
-    headers.update({
-        'X-API-VERSION': const.API_LATEST_VERSION
-    })
+    if 'X-API-VERSION' not in headers:
+        headers.update({
+            'X-API-VERSION': const.API_LATEST_VERSION
+        })
 
     vsum = 'f4c71v4f4c71v4f4c71v4f4c71v4f4c7'
     if 'user-key' in headers:
