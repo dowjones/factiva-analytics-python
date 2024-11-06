@@ -44,7 +44,11 @@ class SnapshotTimeSeriesJobReponse(SnapshotBaseJobResponse):
 
     def __str__(self, detailed=True, prefix='  ├─', root_prefix=''):
         ret_val = super().__str__(detailed, prefix, root_prefix)
-        ret_val += f"{prefix}download_link: {tools.print_property(self.download_link[0:20] + '...' + self.download_link[-20:])}"
+        if self.download_link:
+            ret_val += f"{prefix}download_link: {tools.print_property(self.download_link[0:20] + '...' + self.download_link[-20:])}"
+        else:
+            ret_val += f"{prefix}download_link: <NotSet>"
+        ret_val += f"\n{prefix}data: {tools.print_property(self.data)}"
         if self.errors:
             ret_val += f"\n{prefix.replace('├', '└')}errors: [{len(self.errors)}]"
             err_list = [f"\n{prefix[0:-1]}  |-{err['title']}: {err['detail']}" for err in self.errors]
@@ -335,14 +339,23 @@ class SnapshotTimeSeries(SnapshotBase):
         getinfo_url = f'{self.__JOB_BASE_URL}/{self.job_response.job_id}'
         response = req.api_send_request(method='GET', endpoint_url=getinfo_url, headers=headers_dict)
 
+        if response.status_code == 500:
+            headers_dict.update(
+                {'X-API-VERSION': '2.0'}
+            )
+            self.__log.info(f'Retrying get Analytics Job info with X-API-VERSION 2.0 info for ID {self.job_response.job_id}')
+            response = req.api_send_request(method='GET', endpoint_url=getinfo_url, headers=headers_dict)
+
         if response.status_code == 200:
             self.__log.info(f'Job ID {self.job_response.job_id} info retrieved successfully')
             response_data = response.json()
             self.job_response.job_state = response_data['data']['attributes']['current_state']
             self.job_response.job_link = response_data['links']['self']
             if self.job_response.job_state == const.API_JOB_DONE_STATE:
-                # self.job_response.data = pd.DataFrame(response_data['data']['attributes']['results'])
-                self.job_response.download_link = response_data['data']['attributes']['download_link']
+                if 'results' in response_data['data']['attributes'].keys():
+                    self.job_response.data = pd.DataFrame(response_data['data']['attributes']['results'])
+                else:
+                    self.job_response.download_link = response_data['data']['attributes']['download_link']
             if 'errors' in response_data.keys():
                 self.job_response.errors = response_data['errors']
         elif response.status_code == 404:
@@ -352,7 +365,13 @@ class SnapshotTimeSeries(SnapshotBase):
             raise ValueError(f'Bad Request: {detail}')
         else:
             raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
-        # TODO: Download file and assign the self.job_response.data variable
+        if self.job_response.download_link:
+            self.__log.info(f'Downloading TimeSeries response file from {self.job_response.download_link.split('/')[-1]}')
+            response = req.api_send_request(method='GET', endpoint_url=self.job_response.download_link, headers=headers_dict)
+            if response.status_code == 200:
+                self.job_response.data = pd.DataFrame(response.json()['data']['attributes']['results'])
+            else:
+                raise RuntimeError(f'TimeSeries results file download error: [{response.text}]')
         self.__log.info('get_job_response End')
         return True
 
