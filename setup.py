@@ -81,8 +81,11 @@ setup(
     ],
     extras_require={
         'dev': [
-            'pytest>=6.0',
-            'sphinx>=3.0',
+            'pytest',
+            'sphinx',
+            'furo',
+            'sphinx-inline-tabs',
+            'sphinx-copybutton'
         ],
         'mongodb': ['pymongo'],
         'elasticsearch': ['elasticsearch'],
