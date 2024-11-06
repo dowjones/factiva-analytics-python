@@ -18,9 +18,12 @@ class SnapshotBaseJobResponse():
 
     def __str__(self, detailed=True, prefix='  |-', root_prefix=''):
         ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
-        ret_val += f"{prefix}job_id: {tools.print_property(self.job_id)}\n"
+        if len(self.job_id) >= 40:
+            ret_val += f"{prefix}job_id: {tools.mask_string(self.job_id, 10)}\n"
+        else:
+            ret_val += f"{prefix}job_id: {tools.print_property(self.job_id)}\n"
         if self.job_link:
-            ret_val += f"{prefix}job_link: {tools.print_property(self.job_link[0:20] + '...' + self.job_link[-20:])}\n"
+            ret_val += f"{prefix}job_link: {tools.print_property(self.job_link[0:20] + '...' + self.job_link[-10:])}\n"
         else:
             ret_val += f"{prefix}job_link: <NotSet>\n"
         ret_val += f"{prefix}job_state: {tools.print_property(self.job_state)}\n"
