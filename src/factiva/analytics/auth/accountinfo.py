@@ -12,7 +12,8 @@ from ..streams import StreamingInstanceList
 class AccountInfo:
     """
     Class that represents a user-key Account and can be instantiated based on the
-    user-key value provided by the Dow Jones Developer Support team.
+    user-key value provided when the Factiva Analytics account was provisioned and
+    notified via the Welcome email.
 
     """
 
@@ -23,11 +24,11 @@ class AccountInfo:
     account_name: str = None
     account_type: str = None
     active_product: str = None
-    max_allowed_concurrent_extractions: int = None
+    # max_allowed_concurrent_extractions: int = None
     max_allowed_extracted_documents: int = None
     max_allowed_extractions: int = None
     currently_running_extractions: int = None
-    total_downloaded_bytes: int = None
+    # total_downloaded_bytes: int = None
     total_extracted_documents: int = None
     total_extractions: int = None
     total_stream_instances: int = None
@@ -43,45 +44,56 @@ class AccountInfo:
         
         Parameters
         ----------
-        key : str
+        user_key : str
             String containing the 32-character long APi Key. If not provided, the
             constructor will try to obtain its value from the ``FACTIVA_USERKEY``
             environment variable.
-        stats : bool
-            Indicates if user data has to be pulled from the server at creation
-            time (``True``) or just create an instance with no stats data
-            (``False`` - default). This operation fills account detail properties
-            along with maximum, used and remaining values. It may take several 
-            seconds to complete.
         
         Examples
         --------
-        Creating a new UserKey instance providing the ``key`` string explicitly and
-        retrieving the latest account details:
-
-        .. code-block:: python
-
-            from factiva.analytics import UserKey
-            u = UserKey('abcd1234abcd1234abcd1234abcd1234', True)
-            print(u)
-
-        .. code-block::
-
-            <class 'factiva.analytics.UserKey'>
-
-
         Creating a new instance taking the key value from the ``FACTIVA_USERKEY``
         environment varaible, and not requesting account statistics.
 
         .. code-block:: python
 
-            from factiva.analytics import UserKey
-            u = UserKey()
-            print(u)
+            from factiva.analytics import AccountInfo
+            ai = AccountInfo()
+            print(ai)
 
         .. code-block::
 
-            <class 'factiva.analytics.UserKey'>
+            <'factiva.analytics.AccountInfo'>
+            ├─user_key: <'factiva.analytics.UserKey'>
+            │  ├─key: ****************************nQdu
+            │  └─cloud_token: **********************YKB22sJCkHXX
+            ├─account_name: Account-Name
+            ├─account_type: account_with_contract_limits
+            ├─active_product: DNA
+            ├─max_allowed_extracted_documents: 20,000,000
+            ├─max_allowed_extractions: 30
+            ├─currently_running_extractions: 0
+            ├─total_extracted_documents: 15,315,291
+            ├─total_extractions: 22
+            ├─total_stream_instances: 0
+            ├─total_stream_subscriptions: 0
+            ├─extractions_list: <NotLoaded>
+            ├─streams_list: <NotLoaded>
+            ├─enabled_company_identifiers:
+            │  ├─[1]: sedol
+            │  ├─[3]: cusip
+            │  ├─[4]: isin
+            │  └─[5]: ticker_exchange
+            ├─remaining_documents: 4,684,709
+            └─remaining_extractions: 8
+
+        Creating a new AccountInfo instance providing the ``user_key`` string explicitly and
+        retrieving the latest account details:
+
+        .. code-block:: python
+
+            from factiva.analytics import AccountInfo
+            ai = AccountInfo('abcd1234abcd1234abcd1234abcd1234')
+            print(ai)
 
         """
         self.__log = log.get_factiva_logger()
@@ -135,11 +147,11 @@ class AccountInfo:
                 self.account_name = resp_obj['data']['attributes']['name']
                 self.account_type = resp_obj['data']['type']
                 self.active_product = resp_obj['data']['attributes']['products']
-                self.max_allowed_concurrent_extractions = resp_obj['data']['attributes']['max_allowed_concurrent_extracts']
+                # self.max_allowed_concurrent_extractions = resp_obj['data']['attributes']['max_allowed_concurrent_extracts']
                 self.max_allowed_extracted_documents = resp_obj['data']['attributes']['max_allowed_document_extracts']
                 self.max_allowed_extractions = resp_obj['data']['attributes']['max_allowed_extracts']
                 self.currently_running_extractions = resp_obj['data']['attributes']['cnt_curr_ext']
-                self.total_downloaded_bytes = resp_obj['data']['attributes']['current_downloaded_amount']
+                # self.total_downloaded_bytes = resp_obj['data']['attributes']['current_downloaded_amount']
                 self.total_extracted_documents = resp_obj['data']['attributes']['tot_document_extracts']
                 self.total_extractions = resp_obj['data']['attributes']['tot_extracts']
                 self.total_stream_instances = resp_obj['data']['attributes']['tot_topics']
@@ -265,7 +277,7 @@ class AccountInfo:
         elif response.status_code == 404:
             stream_df = pd.DataFrame()
         elif response.status_code == 403:
-            raise ValueError('Factiva API-Key does not exist or inactive.')
+            raise ValueError('Factiva API-Key does not exist or disabled.')
         else:
             raise RuntimeError('Unexpected Get Streams API Error')
         
