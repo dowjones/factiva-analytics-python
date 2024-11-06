@@ -13,7 +13,7 @@
 import os
 import sys
 from datetime import date
-from factiva.analytics.__version__ import __version__
+
 sys.path.insert(0, os.path.abspath('../../src'))
 sys.path.insert(0, os.path.abspath('../../src/factiva'))
 sys.path.insert(0, os.path.abspath('../../src/factiva/analytics'))
@@ -33,6 +33,7 @@ copyright = f'{current_year}, Dow Jones'
 author = 'Dow Jones - Customer Solutions Engineering (CSE) Team'
 
 # The full version, including alpha/beta/rc tags
+from factiva.analytics.__version__ import __version__
 release = __version__
 version = __version__
 
