@@ -63,8 +63,7 @@ class SnapshotTimeSeriesJobReponse(SnapshotBaseJobResponse):
 class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
     """
     Snapshot Query for TimeSeries operations class. Used only in the context of
-    SnapshotTimeSeries, but can be transformed to other SnapshotQuery types when 
-    those are created using an instance of this class as parameter.
+    SnapshotTimeSeries.
 
     Attributes
     ----------
@@ -82,7 +81,7 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
         Time unit used to aggregate values in the time-series calculation
     date_field : str
         Schema date-time field used to calculate the time-series dataset
-    group_dimensions : list[str]
+    group_dimension : str
         List of fields to break-down aggregates per time period unit
     top : str
         Max entries per group_dimension per time period unit
@@ -90,7 +89,7 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
 
     frequency : str = None
     date_field : str = None
-    group_dimensions : list[str] = None
+    group_dimension : str = None
     top : int = None
 
     def __init__(self,
@@ -101,7 +100,7 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
                 exclude_lists: dict = None,
                 frequency: str = const.API_MONTH_PERIOD,
                 date_field:str = const.API_PUBLICATION_DATETIME_FIELD,
-                group_dimensions: list = [],
+                group_dimension: str = 'source_code',
                 top: int = 10):
         """
         Class constructor
@@ -126,16 +125,16 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
             Collection of bulk values to be removed from the selection criteria.
             Python dictionary with the format ``{column_name1: ['ListID1', 'listID2, ...],
             column_name2: ['listID1', 'listID2', ...]}``.
-        frequency : str, optional
+        frequency : str, optional (default: 'MONTH')
             Date part to be used to group subtotals in the time-series dataset. Allowed values
             are ``DAY``, ``MONTH`` (default) and ``YEAR``.
-        date_field : str, optional
+        date_field : str, optional (default: 'publication_datetime')
             Timestamp column that will be used to calculate the time-series dataset. It can be
             any of the three values: ``publication_datetime`` (default), ``modification_datetime``,
             and ``ingestion_datetime``.
-        group_dimensions : list[str], optional
-            List of fields that will be used to break-down subtotals for each period. This list can
-            have a maximum of 4 elements. Allowed values are ``['source_code', 'subject_codes', 
+        group_dimension : str, optional (default: 'source_code')
+            Field that will be used to break-down subtotals for each period. Allowed values are
+            ``['source_code', 'subject_codes', 
             'region_codes', 'industry_codes', 'company_codes', 'person_codes', 'company_codes_about', 
             'company_codes_relevance', 'company_codes_cusip', 'company_codes_isin', 
             'company_codes_sedol', 'company_codes_ticker', 'company_codes_about_cusip', 
@@ -143,8 +142,8 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
             'company_codes_relevance_cusip', 'company_codes_relevance_isin', 
             'company_codes_relevance_sedol', 'company_codes_relevance_ticker']``
         top : int, optional
-            Limits the dataset to return only the top X values for each dimension passed in the
-            ``group_dimensions`` parameter. Default 10.
+            Limits the dataset to return only the top X values for the dimension passed in the
+            ``group_dimension`` parameter. Default 10. Can be set to -1 to return all values.
         """
         super().__init__(where, includes, include_lists, excludes, exclude_lists)
 
@@ -158,10 +157,10 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
         tools.validate_field_options(date_field, const.API_DATETIME_FIELDS)
         self.date_field = date_field
 
-        if isinstance(group_dimensions, list):
-            self.group_dimensions = group_dimensions
-        # TODO: Validate values in the list group_dimensions are valid form the
-        #       list of all possible columns that can be used for this purpose
+        if group_dimension in const.API_GROUP_DIMENSIONS_FIELDS:
+            self.group_dimension = group_dimension
+        else:
+            raise ValueError('Group dimension is not valid')
 
         tools.validate_type(top, int, "Unexpected value for top")
         if top >= 0:
@@ -191,17 +190,17 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
         tools.validate_field_options(self.date_field, const.API_DATETIME_FIELDS)
         payload["query"].update({"date_field": self.date_field})
 
-        if(self.group_dimensions):
-            if(len(self.group_dimensions)<=4):
-                for option in self.group_dimensions:
-                    tools.validate_field_options(option, const.API_GROUP_DIMENSIONS_FIELDS)
-            else:
-                raise ValueError("The maximiun group_dimensions size is 4")
-        else:
-            self.group_dimensions = []
+        # if(self.group_dimension):
+        #     if(len(self.group_dimension)<=4):
+        #         for option in self.group_dimension:
+        #             tools.validate_field_options(option, const.API_GROUP_DIMENSIONS_FIELDS)
+        #     else:
+        #         raise ValueError("The maximiun group_dimensions size is 4")
+        # else:
+        #     self.group_dimension = []
         
         payload["query"].update(
-            {"group_dimensions": self.group_dimensions})
+            {"group_dimensions": [self.group_dimension]})
 
         payload["query"].update({"top": self.top})
 
@@ -217,7 +216,7 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
         ret_val = ret_val.replace('└─ex', '├─ex')
         ret_val += f"\n{prefix}frequency: {tools.print_property(self.frequency)}"
         ret_val += f"\n{prefix}date_field: {tools.print_property(self.date_field)}"
-        ret_val += f"\n{prefix}group_dimensions: {tools.print_property(self.group_dimensions)}"
+        ret_val += f"\n{prefix}group_dimensions: {tools.print_property(self.group_dimension)}"
         ret_val += f"\n{prefix[0:-2]}└─top: {tools.print_property(self.top)}"
         return ret_val
 
