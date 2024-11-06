@@ -19,13 +19,13 @@ DNA_BASEPATH = '/dna'  # Deprecated
 # Snapshots
 API_SNAPSHOTS_BASEPATH = '/extractions/documents'
 API_EXPLAIN_SUFFIX = '/_explain'
-API_ANALYTICS_BASEPATH = '/alpha/analytics'
+API_ANALYTICS_BASEPATH = '/analytics'
 API_EXTRACTIONS_BASEPATH = '/extractions'
 API_EXTRACTIONS_SAMPLES_SUFFIX = '/samples'
 API_DEFAULT_EXTRACTION_TYPE = "documents"
 API_SAMPLES_EXTRACTION_TYPE = "samples"
 
-API_SNAPSHOTS_TAXONOMY_BASEPATH = '/alpha/taxonomies'
+API_SNAPSHOTS_TAXONOMY_BASEPATH = '/taxonomies'
 API_SNAPSHOTS_COMPANIES_BASEPATH = '/alpha/companies'
 API_SNAPSHOTS_COMPANY_IDENTIFIERS_BASEPATH = '/alpha/companies/identifiers'
 API_SNAPSHOTS_COMPANIES_PIT = '/pit'
