@@ -23,7 +23,7 @@ OAuthUser
 
 * ``FACTIVA_CLIENTID``: Assigned OAuth Client ID. E.g. ``0abcd1wxyz2abcd3wxyz4abcd5wxyz6o``.
     Required for ArticleRetrieval.
-* ``FACTIVA_USERNAME``: Assigned OAuth Username. E.g. ``9ZZZ000000-svcaccount@dowjones.com``.
+* ``FACTIVA_USERNAME``: Assigned OAuth Username. E.g. ``0XXX000000-svcaccount@dowjones.com``.
     Required for ArticleRetrieval.
 * ``FACTIVA_PASSWORD``: Assigned OAuth Password. E.g. ``pa55WOrdpa55WOrd``.
     Required for ArticleRetrieval.
