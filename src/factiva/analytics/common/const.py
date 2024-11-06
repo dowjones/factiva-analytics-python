@@ -67,7 +67,7 @@ API_GROUP_DIMENSIONS_FIELDS = [
     'company_codes_about_isin', 'company_codes_about_sedol',
     'company_codes_about_ticker', 'company_codes_relevance_cusip',
     'company_codes_relevance_isin', 'company_codes_relevance_sedol',
-    'company_codes_relevance_ticker'
+    'company_codes_relevance_ticker', 'language_code'
 ]
 
 # Streams
