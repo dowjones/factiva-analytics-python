@@ -196,9 +196,9 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
 
     def __init__(
         self,
+        job_id=None,
         user_key=None,
-        query=None,
-        job_id=None
+        query=None
     ):
         """
         SnapshotExplain constructor.
