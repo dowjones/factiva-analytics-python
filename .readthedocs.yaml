@@ -16,7 +16,6 @@ sphinx:
 
 formats:
   - pdf
-  - html
   - epub
 
 # Build documentation in the docs/ directory with Sphinx
