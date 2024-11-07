@@ -45,17 +45,17 @@ class OAuthUser:
 
         from factiva.analytics import OAuthUser
         o = OAuthUser()
-        o
+        print(o)
 
     output
 
     .. code-block::
 
         <'factiva.analytics.OAuthUser'>
-        |-client_id = ****************************4Cs6
-        |-username = 9ZZZ000000-svcaccount@dowjones.com
-        |-password = ************gRk3
-        |-token_status = not_authenticated
+          ├─client_id: ****************************4Cs6
+          ├─username: 9zzz131500-svcaccount@dowjones.com
+          ├─password: ************KAHl
+          └─token_status: not_authenticated
 
     """
 

@@ -15,6 +15,59 @@ class AccountInfo:
     user-key value provided when the Factiva Analytics account was provisioned and
     notified via the Welcome email.
 
+    Parameters
+    ----------
+    user_key : str
+        String containing the 32-character long APi Key. If not provided, the
+        constructor will try to obtain its value from the ``FACTIVA_USERKEY``
+        environment variable.
+    
+    Examples
+    --------
+    Creating a new instance taking the key value from the ``FACTIVA_USERKEY``
+    environment varaible, and not requesting account statistics.
+
+    .. code-block:: python
+
+        from factiva.analytics import AccountInfo
+        ai = AccountInfo()
+        print(ai)
+
+    .. code-block::
+
+        <'factiva.analytics.AccountInfo'>
+        ├─user_key: <'factiva.analytics.UserKey'>
+        │  ├─key: ****************************nQdu
+        │  └─cloud_token: **********************YKB22sJCkHXX
+        ├─account_name: Account-Name
+        ├─account_type: account_with_contract_limits
+        ├─active_product: DNA
+        ├─max_allowed_extracted_documents: 20,000,000
+        ├─max_allowed_extractions: 30
+        ├─currently_running_extractions: 0
+        ├─total_extracted_documents: 15,315,291
+        ├─total_extractions: 22
+        ├─total_stream_instances: 0
+        ├─total_stream_subscriptions: 0
+        ├─extractions_list: <NotLoaded>
+        ├─streams_list: <NotLoaded>
+        ├─enabled_company_identifiers:
+        │  ├─[1]: sedol
+        │  ├─[3]: cusip
+        │  ├─[4]: isin
+        │  └─[5]: ticker_exchange
+        ├─remaining_documents: 4,684,709
+        └─remaining_extractions: 8
+
+    Creating a new AccountInfo instance providing the ``user_key`` string explicitly and
+    retrieving the latest account details:
+
+    .. code-block:: python
+
+        from factiva.analytics import AccountInfo
+        ai = AccountInfo('abcd1234abcd1234abcd1234abcd1234')
+        print(ai)
+
     """
 
     __API_ENDPOINT_BASEURL = f'{const.API_HOST}{const.API_ACCOUNT_BASEPATH}/'
@@ -42,59 +95,6 @@ class AccountInfo:
         """
         Construct the instance of the class
         
-        Parameters
-        ----------
-        user_key : str
-            String containing the 32-character long APi Key. If not provided, the
-            constructor will try to obtain its value from the ``FACTIVA_USERKEY``
-            environment variable.
-        
-        Examples
-        --------
-        Creating a new instance taking the key value from the ``FACTIVA_USERKEY``
-        environment varaible, and not requesting account statistics.
-
-        .. code-block:: python
-
-            from factiva.analytics import AccountInfo
-            ai = AccountInfo()
-            print(ai)
-
-        .. code-block::
-
-            <'factiva.analytics.AccountInfo'>
-            ├─user_key: <'factiva.analytics.UserKey'>
-            │  ├─key: ****************************nQdu
-            │  └─cloud_token: **********************YKB22sJCkHXX
-            ├─account_name: Account-Name
-            ├─account_type: account_with_contract_limits
-            ├─active_product: DNA
-            ├─max_allowed_extracted_documents: 20,000,000
-            ├─max_allowed_extractions: 30
-            ├─currently_running_extractions: 0
-            ├─total_extracted_documents: 15,315,291
-            ├─total_extractions: 22
-            ├─total_stream_instances: 0
-            ├─total_stream_subscriptions: 0
-            ├─extractions_list: <NotLoaded>
-            ├─streams_list: <NotLoaded>
-            ├─enabled_company_identifiers:
-            │  ├─[1]: sedol
-            │  ├─[3]: cusip
-            │  ├─[4]: isin
-            │  └─[5]: ticker_exchange
-            ├─remaining_documents: 4,684,709
-            └─remaining_extractions: 8
-
-        Creating a new AccountInfo instance providing the ``user_key`` string explicitly and
-        retrieving the latest account details:
-
-        .. code-block:: python
-
-            from factiva.analytics import AccountInfo
-            ai = AccountInfo('abcd1234abcd1234abcd1234abcd1234')
-            print(ai)
-
         """
         self.__log = log.get_factiva_logger()
         self.user_key = UserKey(user_key)
