@@ -8,6 +8,11 @@ Depending on thte service intended to be used, an operation object will need eit
 ENV variables to store values to instantiate these objects (see Getting Started
 > Environment Variables > :ref:`gettingstarted_envvariables_auth`).
 
+However, most class constructors look automatically for relevant environment variables
+and perform the authentication automatically.
+
+If an explicit user creation is needed, the following classes can be used:
+
 UserKey
 -------
 
@@ -15,7 +20,7 @@ Used by all services except the Article Retrieval Service. Usually it's not requ
 be instantiated independently as the creation of a `parent` object will get the value
 from the environment.
 
-If using this class explicitly, the following code snippets can be found helpful:
+If using this class explicitly, the following code snippet can be helpful:
 
 .. code-block:: python
 
@@ -23,6 +28,13 @@ If using this class explicitly, the following code snippets can be found helpful
     u = UserKey('abcd1234abcd1234abcd1234abcd1234')
     se = SnapshotExplain(user_key=u)
 
+When using ENV variables, the above snippet requires only the constructor call from the parent
+class, in this case `SnapshotExplain()`.
+
+.. code-block:: python
+
+    from factiva.analytics import SnapshotExplain
+    ar = SnapshotExplain()
 
 OAuthUser
 ---------
@@ -41,9 +53,10 @@ class explicitly:
     ar = ArticleRetrieval(oauth_user=ou)
     ...
 
-When using ENV variables, the above snippet becomes shorter.
+When using ENV variables, the above snippet requires only the constructor call from the parent
+class, in this case `ArticleRetrieval()`.
 
 .. code-block:: python
 
-    from factiva.analytics import SrticleRetrieval
+    from factiva.analytics import ArticleRetrieval
     ar = ArticleRetrieval()
