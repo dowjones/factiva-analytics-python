@@ -17,7 +17,7 @@ Check out the `Dow Jones Developer Portal <https://developer.dowjones.com>`_ for
 
 .. toctree::
    :maxdepth: 2
-   :caption: Main Concepts
+   :caption: Core Concepts
    :glob:
 
    concepts/auth
