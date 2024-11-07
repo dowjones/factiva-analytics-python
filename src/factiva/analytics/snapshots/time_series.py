@@ -82,7 +82,7 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
     date_field : str
         Schema date-time field used to calculate the time-series dataset
     group_dimension : str
-        List of fields to break-down aggregates per time period unit
+        Field name to break-down aggregates per time period unit
     top : str
         Max entries per group_dimension per time period unit
     """
@@ -100,7 +100,7 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
                 exclude_lists: dict = None,
                 frequency: str = const.API_MONTH_PERIOD,
                 date_field:str = const.API_PUBLICATION_DATETIME_FIELD,
-                group_dimension: str = 'source_code',
+                group_dimension: str = None,
                 top: int = 10):
         """
         Class constructor
@@ -133,7 +133,7 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
             any of the three values: ``publication_datetime`` (default), ``modification_datetime``,
             and ``ingestion_datetime``.
         group_dimension : str, optional (default: 'source_code')
-            Field that will be used to break-down subtotals for each period. Allowed values are
+            Field name that will be used to break-down subtotals for each period. Allowed values are one of the following:
             ``['source_code', 'subject_codes', 
             'region_codes', 'industry_codes', 'company_codes', 'person_codes', 'company_codes_about', 
             'company_codes_relevance', 'company_codes_cusip', 'company_codes_isin', 
@@ -157,10 +157,13 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
         tools.validate_field_options(date_field, const.API_DATETIME_FIELDS)
         self.date_field = date_field
 
-        if group_dimension in const.API_GROUP_DIMENSIONS_FIELDS:
-            self.group_dimension = group_dimension
+        if group_dimension:
+            if group_dimension in const.API_GROUP_DIMENSIONS_FIELDS:
+                self.group_dimension = group_dimension
+            else:
+                raise ValueError('Group dimension is not valid')
         else:
-            raise ValueError('Group dimension is not valid')
+            self.group_dimension = None
 
         tools.validate_type(top, int, "Unexpected value for top")
         if top >= 0:
@@ -190,17 +193,11 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
         tools.validate_field_options(self.date_field, const.API_DATETIME_FIELDS)
         payload["query"].update({"date_field": self.date_field})
 
-        # if(self.group_dimension):
-        #     if(len(self.group_dimension)<=4):
-        #         for option in self.group_dimension:
-        #             tools.validate_field_options(option, const.API_GROUP_DIMENSIONS_FIELDS)
-        #     else:
-        #         raise ValueError("The maximiun group_dimensions size is 4")
-        # else:
-        #     self.group_dimension = []
-        
-        payload["query"].update(
-            {"group_dimensions": [self.group_dimension]})
+        if(self.group_dimension):
+            payload["query"].update(
+                {"group_dimension": [self.group_dimension]})
+        else:
+            self.group_dimension = []
 
         payload["query"].update({"top": self.top})
 
@@ -216,7 +213,7 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
         ret_val = ret_val.replace('└─ex', '├─ex')
         ret_val += f"\n{prefix}frequency: {tools.print_property(self.frequency)}"
         ret_val += f"\n{prefix}date_field: {tools.print_property(self.date_field)}"
-        ret_val += f"\n{prefix}group_dimensions: {tools.print_property(self.group_dimension)}"
+        ret_val += f"\n{prefix}group_dimension: {tools.print_property(self.group_dimension)}"
         ret_val += f"\n{prefix[0:-2]}└─top: {tools.print_property(self.top)}"
         return ret_val
 
