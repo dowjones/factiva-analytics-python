@@ -43,7 +43,7 @@ class SnapshotExtractionJobReponse(SnapshotBaseJobResponse):
             self.job_id = job_id
             self.short_id = job_id.split('-')[-1]
         elif (len(job_id) == 10) and (user_key):
-            self.job_id = f'dj-synhub-extraction-{user_key.key.lower()}-{job_id}'
+            self.job_id = f"dj-synhub-extraction-{user_key.key.lower()}-{job_id}"
             self.short_id = job_id
         else:
             raise ValueError('Unexpected value for job_id. If a short_id is provided, a user_key instance is needed.')
@@ -233,12 +233,12 @@ class SnapshotExtraction(SnapshotBase):
 
         super().__init__(user_key, query, job_id)
         self.__log = log.get_factiva_logger()
-        self.__JOB_BASE_URL = f'{const.API_HOST}{const.API_SNAPSHOTS_BASEPATH}'
+        self.__JOB_BASE_URL = f"{const.API_HOST}{const.API_SNAPSHOTS_BASEPATH}"
 
         self.__log.info('creating SnapshotExtraction...')
 
         if job_id:
-            self.__log.info(f'Creating SnapshotExtraction instance with JobID {job_id}')
+            self.__log.info(f"Creating SnapshotExtraction instance with JobID {job_id}")
             self.job_response = SnapshotExtractionJobReponse(job_id, self.user_key)
             self.get_job_response()
         elif query:
@@ -282,7 +282,7 @@ class SnapshotExtraction(SnapshotBase):
                 'Content-Type': 'application/json'
             }
         
-        submit_url = f'{self.__JOB_BASE_URL}'
+        submit_url = f"{self.__JOB_BASE_URL}"
         submit_payload = self.query.get_payload()
 
         response = req.api_send_request(method='POST', endpoint_url=submit_url, headers=headers_dict, payload=submit_payload)
@@ -293,9 +293,9 @@ class SnapshotExtraction(SnapshotBase):
             self.job_response.job_state = response_data['data']['attributes']['current_state']
             self.job_response.job_link = response_data['links']['self']
         elif response.status_code == 400:
-            raise ValueError(f'Invalid Query [{response.text}]')
+            raise ValueError(f"Invalid Query [{response.text}]")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         
         self.__log.info('submit_job OK')
         return True
@@ -322,7 +322,7 @@ class SnapshotExtraction(SnapshotBase):
             is invalid.
         """
 
-        self.__log.info(f'get_job_response for ID {self.job_response.short_id}')
+        self.__log.info(f"get_job_response for ID {self.job_response.short_id}")
 
         if (not self.job_response):
             raise RuntimeError('Job has not yet been submitted or Job ID was not set')
@@ -332,11 +332,11 @@ class SnapshotExtraction(SnapshotBase):
             'Content-Type': 'application/json'
         }
 
-        getinfo_url = f'{self.__JOB_BASE_URL}/{self.job_response.job_id}'
+        getinfo_url = f"{self.__JOB_BASE_URL}/{self.job_response.job_id}"
         response = req.api_send_request(method='GET', endpoint_url=getinfo_url, headers=headers_dict)
 
         if response.status_code == 200:
-            self.__log.info(f'Job ID {self.job_response.job_id} info retrieved successfully')
+            self.__log.info(f"Job ID {self.job_response.job_id} info retrieved successfully")
             response_data = response.json()
             self.job_response.job_state = response_data['data']['attributes']['current_state']
             self.__log.info(f"Received State: {self.job_response.job_state}")
@@ -353,9 +353,9 @@ class SnapshotExtraction(SnapshotBase):
             raise ValueError('Job ID does not exist for the provided user key.')
         elif response.status_code == 400:
             detail = response_data['errors'][0]['detail']
-            raise ValueError(f'Bad Request: {detail}')
+            raise ValueError(f"Bad Request: {detail}")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         self.__log.info('get_job_response OK')
         return True
 
@@ -389,7 +389,7 @@ class SnapshotExtraction(SnapshotBase):
             with open(download_path, 'wb') as download_file_path:
                 download_file_path.write(response.content)
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         return True
 
 
@@ -425,7 +425,7 @@ class SnapshotExtraction(SnapshotBase):
             if len(self.job_response.files) > 0:
                 for file_uri in self.job_response.files:
                     file_name = file_uri.split('/')[-1]
-                    local_path = f'{path}/{file_name}'
+                    local_path = f"{path}/{file_name}"
                     self.__download_extraction_file(file_uri, local_path)
             else:
                 return False

@@ -70,7 +70,7 @@ class AccountInfo:
 
     """
 
-    __API_ENDPOINT_BASEURL = f'{const.API_HOST}{const.API_ACCOUNT_BASEPATH}/'
+    __API_ENDPOINT_BASEURL = f"{const.API_HOST}{const.API_ACCOUNT_BASEPATH}/"
     __log = None
     
     user_key: UserKey = None
@@ -138,7 +138,7 @@ class AccountInfo:
 
         """
         self.__log.info('get_stats started')
-        account_endpoint = f'{self.__API_ENDPOINT_BASEURL}{self.user_key.key}'
+        account_endpoint = f"{self.__API_ENDPOINT_BASEURL}{self.user_key.key}"
         req_head = {'user-key': self.user_key.key}
         resp = req.api_send_request(method='GET', endpoint_url=account_endpoint, headers=req_head)
         if resp.status_code == 200:
@@ -185,7 +185,7 @@ class AccountInfo:
 
         """
         self.__log.info('get_extractions started')
-        endpoint = f'{const.API_HOST}{const.API_EXTRACTIONS_BASEPATH}'
+        endpoint = f"{const.API_HOST}{const.API_EXTRACTIONS_BASEPATH}"
 
         headers_dict = {'user-key': self.user_key.key}
 
@@ -195,7 +195,7 @@ class AccountInfo:
             if response.status_code == 403:
                 raise ValueError('Factiva API-Key does not exist or inactive.')
 
-            raise RuntimeError(f'Unexpected API Error with message: {response.text}')
+            raise RuntimeError(f"Unexpected API Error with message: {response.text}")
 
         response_data = response.json()
         if response_data['data'] == []:
@@ -247,7 +247,7 @@ class AccountInfo:
         request_headers = {'user-key': self.user_key.key}
         response = req.api_send_request(
             method="GET",
-            endpoint_url=f'{const.API_HOST}{const.API_STREAMS_BASEPATH}',
+            endpoint_url=f"{const.API_HOST}{const.API_STREAMS_BASEPATH}",
             headers=request_headers
         )
         if response.status_code == 200:
@@ -290,7 +290,7 @@ class AccountInfo:
         request_headers = {'user-key': self.user_key.key}
         response = req.api_send_request(
             method="GET",
-            endpoint_url=f'{const.API_HOST}{const.API_SNAPSHOTS_TAXONOMY_BASEPATH}',
+            endpoint_url=f"{const.API_HOST}{const.API_SNAPSHOTS_TAXONOMY_BASEPATH}",
             headers=request_headers
         )
         if response.status_code == 200:

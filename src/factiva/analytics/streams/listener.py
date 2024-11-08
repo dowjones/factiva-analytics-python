@@ -97,7 +97,7 @@ class Listener:
         """Property for retrieving the stream id uri."""
         host = self.user_key.get_uri_context()
         stream_id = '-'.join(self.subscription_id.split("-")[:-2])
-        return f'{host}/streams/{stream_id}'
+        return f"{host}/streams/{stream_id}"
 
 
     # pylint: disable=too-many-arguments

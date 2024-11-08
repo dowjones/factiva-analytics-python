@@ -188,7 +188,7 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
 
     """
 
-    __SAMPLES_BASEURL = f'{const.API_HOST}{const.API_EXTRACTIONS_BASEPATH}{const.API_EXTRACTIONS_SAMPLES_SUFFIX}'
+    __SAMPLES_BASEURL = f"{const.API_HOST}{const.API_EXTRACTIONS_BASEPATH}{const.API_EXTRACTIONS_SAMPLES_SUFFIX}"
     __MAX_SAMPLES = 100
     samples : SnapshotExplainSamplesResponse = None
     job_response : SnapshotExplainJobResponse = None
@@ -222,10 +222,10 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
         """
         super().__init__(job_id=job_id, query=query, user_key=user_key)
         self.__log = log.get_factiva_logger()
-        self.__JOB_BASE_URL = f'{const.API_HOST}{const.API_SNAPSHOTS_BASEPATH}'
+        self.__JOB_BASE_URL = f"{const.API_HOST}{const.API_SNAPSHOTS_BASEPATH}"
 
         if job_id:
-            self.__log.info(f'Creating SnapshotExplain instance with JobID {job_id}')
+            self.__log.info(f"Creating SnapshotExplain instance with JobID {job_id}")
             self.job_response = SnapshotExplainJobResponse(job_id)
             self.get_job_response()
         elif query:
@@ -263,7 +263,7 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
                 'Content-Type': 'application/json'
             }
         
-        submit_url = f'{self.__JOB_BASE_URL}{const.API_EXPLAIN_SUFFIX}'
+        submit_url = f"{self.__JOB_BASE_URL}{const.API_EXPLAIN_SUFFIX}"
         submit_payload = self.query.get_payload()
 
         response = req.api_send_request(method='POST', endpoint_url=submit_url, headers=headers_dict, payload=submit_payload)
@@ -274,9 +274,9 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
             self.job_response.job_state = response_data['data']['attributes']['current_state']
             self.job_response.job_link = response_data['links']['self']
         elif response.status_code == 400:
-            raise ValueError(f'Invalid Query [{response.text}]')
+            raise ValueError(f"Invalid Query [{response.text}]")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         self.__log.info('submit_job End')
         return True
 
@@ -304,12 +304,12 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
             'Content-Type': 'application/json'
         }
 
-        self.__log.info(f'Requesting Explain Job info for ID {self.job_response.job_id}')
-        getinfo_url = f'{self.__JOB_BASE_URL}/{self.job_response.job_id}{const.API_EXPLAIN_SUFFIX}'
+        self.__log.info(f"Requesting Explain Job info for ID {self.job_response.job_id}")
+        getinfo_url = f"{self.__JOB_BASE_URL}/{self.job_response.job_id}{const.API_EXPLAIN_SUFFIX}"
         response = req.api_send_request(method='GET', endpoint_url=getinfo_url, headers=headers_dict)
 
         if response.status_code == 200:
-            self.__log.info(f'Job ID {self.job_response.job_id} info retrieved successfully')
+            self.__log.info(f"Job ID {self.job_response.job_id} info retrieved successfully")
             response_data = response.json()
             self.job_response.job_state = response_data['data']['attributes']['current_state']
             self.job_response.job_link = response_data['links']['self']
@@ -324,9 +324,9 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
             raise RuntimeError('Job ID does not exist.')
         elif response.status_code == 400:
             detail = response_data['errors'][0]['detail']
-            raise ValueError(f'Bad Request: {detail}')
+            raise ValueError(f"Bad Request: {detail}")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         self.__log.info('get_job_response End')
         return True
 
@@ -349,7 +349,7 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
             raise RuntimeError('Job has not yet been submitted or Job ID was not set')
         
         if (num_samples < 1) or (num_samples > self.__MAX_SAMPLES):
-            raise ValueError(f'The n_samples value must be an integer between 1 and {self.__MAX_SAMPLES}')
+            raise ValueError(f"The n_samples value must be an integer between 1 and {self.__MAX_SAMPLES}")
 
         headers_dict = {
             'user-key': self.user_key.key,
@@ -360,24 +360,24 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
             'num_samples': num_samples
         }
 
-        self.__log.info(f'Requesting {num_samples} samples for JobID {self.job_response.job_id}')
-        samples_url = f'{self.__SAMPLES_BASEURL}/{self.job_response.job_id}'
+        self.__log.info(f"Requesting {num_samples} samples for JobID {self.job_response.job_id}")
+        samples_url = f"{self.__SAMPLES_BASEURL}/{self.job_response.job_id}"
         response = req.api_send_request(method='GET',
                                         endpoint_url=samples_url,
                                         headers=headers_dict,
                                         qs_params=qs_parameters)
 
         if response.status_code == 200:
-            self.__log.info(f'Samples for Job ID {self.job_response.job_id} retrieved successfully')
+            self.__log.info(f"Samples for Job ID {self.job_response.job_id} retrieved successfully")
             response_data = response.json()
             self.samples = SnapshotExplainSamplesResponse(response_data['data']['attributes']['sample'])
         elif response.status_code == 404:
             raise RuntimeError('Job ID does not exist.')
         elif response.status_code == 400:
             detail = response_data['errors'][0]['detail']
-            raise ValueError(f'Bad Request: {detail}')
+            raise ValueError(f"Bad Request: {detail}")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         self.__log.info('get_samples End')
         return True
 

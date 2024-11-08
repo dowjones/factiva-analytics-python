@@ -4,6 +4,7 @@ from ..common import log
 from ..common import tools
 from ..common import const
 from ..auth import UserKey
+import pandas as pd
 
 
 class FactivaCompany():
@@ -26,8 +27,8 @@ class FactivaCompany():
         >>> c = Company(user_key=u)
     """
 
-    __API_ENDPOINT_TAXONOMY = f'{const.API_HOST}{const.API_SNAPSHOTS_TAXONOMY_BASEPATH}'
-    __API_ENDPOINT_COMPANY = f'{const.API_HOST}{const.API_SNAPSHOTS_COMPANIES_BASEPATH}'
+    __API_ENDPOINT_TAXONOMY = f"{const.API_HOST}{const.API_SNAPSHOTS_TAXONOMY_BASEPATH}"
+    __API_ENDPOINT_COMPANY = f"{const.API_HOST}{const.API_SNAPSHOTS_COMPANIES_BASEPATH}"
     __TICKER_COMPANY_IDENTIFIER_NAME = 'ticker_exchange'
 
     user_key=None
@@ -68,7 +69,7 @@ class FactivaCompany():
             'user-key': self.user_key.key
         }
 
-        endpoint = f'{const.API_HOST}{const.API_SNAPSHOTS_COMPANY_IDENTIFIERS_BASEPATH}'
+        endpoint = f"{const.API_HOST}{const.API_SNAPSHOTS_COMPANY_IDENTIFIERS_BASEPATH}"
 
         response = req.api_send_request(method='GET', endpoint_url=endpoint, headers=headers_dict)
 
@@ -143,10 +144,12 @@ class FactivaCompany():
 
         self.validate_point_time_request(identifier)
         if (to_save_path is None):
+            # TODO: Fix this!
+            DOWNLOAD_DEFAULT_FOLDER = 'fix this'
             to_save_path = DOWNLOAD_DEFAULT_FOLDER
 
         headers_dict = {'user-key': self.user_key.key}
-        endpoint = f'{self.__API_ENDPOINT_TAXONOMY}{const.API_SNAPSHOTS_COMPANIES_PIT}/{identifier}/{file_format}'
+        endpoint = f"{self.__API_ENDPOINT_TAXONOMY}{const.API_SNAPSHOTS_COMPANIES_PIT}/{identifier}/{file_format}"
 
         local_file_name = req.download_file(endpoint, headers_dict, file_name,
                                             file_format, to_save_path,
@@ -177,7 +180,7 @@ class FactivaCompany():
 
         self.validate_point_time_request(identifier)
         headers_dict = {'user-key': self.user_key.key}
-        endpoint = f'{self.__API_ENDPOINT_COMPANY}{const.API_SNAPSHOTS_COMPANIES_PIT}/{identifier}/{value}'
+        endpoint = f"{self.__API_ENDPOINT_COMPANY}{const.API_SNAPSHOTS_COMPANIES_PIT}/{identifier}/{value}"
 
         response = req.api_send_request(endpoint_url=endpoint,
                                         headers=headers_dict)
@@ -225,7 +228,7 @@ class FactivaCompany():
             'user-key': self.user_key.key
         }
 
-        endpoint = f'{const.API_HOST}{const.API_SNAPSHOTS_COMPANIES_BASEPATH}/{code_type}/{company_code}'
+        endpoint = f"{const.API_HOST}{const.API_SNAPSHOTS_COMPANIES_BASEPATH}/{code_type}/{company_code}"
 
         response = req.api_send_request(method='GET', endpoint_url=endpoint, headers=headers_dict)
 
@@ -285,14 +288,14 @@ class FactivaCompany():
             }
         }
 
-        endpoint = f'{const.API_HOST}{const.API_SNAPSHOTS_COMPANIES_BASEPATH}/{code_type}'
+        endpoint = f"{const.API_HOST}{const.API_SNAPSHOTS_COMPANIES_BASEPATH}/{code_type}"
 
         response = req.api_send_request(method='POST', endpoint_url=endpoint, headers=headers_dict, payload=payload_dict)
 
         if response.status_code == 200 or response.status_code == 207:
             response_data = response.json()
             return pd.DataFrame.from_records(response_data['data']['attributes']['successes'])
-        raise RuntimeError(f'API Request returned an unexpected HTTP status with message: {response.text}')
+        raise RuntimeError(f"API Request returned an unexpected HTTP status with message: {response.text}")
 
 
     @log.factiva_logger

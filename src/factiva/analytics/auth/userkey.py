@@ -15,8 +15,8 @@ class UserKey:
 
     """
 
-    # __API_ENDPOINT_BASEURL = f'{const.API_HOST}{const.API_ACCOUNT_BASEPATH}/'
-    __API_CLOUD_TOKEN_URL = f'{const.API_HOST}{const.API_ACCOUNT_STREAM_CREDENTIALS_BASEPATH}'
+    # __API_ENDPOINT_BASEURL = "{const.API_HOST}{const.API_ACCOUNT_BASEPATH}/""
+    __API_CLOUD_TOKEN_URL = f"{const.API_HOST}{const.API_ACCOUNT_STREAM_CREDENTIALS_BASEPATH}"
     __log = None
     
     key: str = None
@@ -71,7 +71,7 @@ class UserKey:
         req_head = {'user-key': self.key}
         response = req.api_send_request(
             method="GET",
-            endpoint_url=f'{self.__API_CLOUD_TOKEN_URL}',
+            endpoint_url=f"{self.__API_CLOUD_TOKEN_URL}",
             headers=req_head
         )
 
@@ -96,7 +96,7 @@ class UserKey:
         request_headers = {'user-key': self.key}
         response = req.api_send_request(
             method="GET",
-            endpoint_url=f'{const.API_HOST}{const.API_SNAPSHOTS_TAXONOMY_BASEPATH}',
+            endpoint_url=f"{const.API_HOST}{const.API_SNAPSHOTS_TAXONOMY_BASEPATH}",
             headers=request_headers
         )
         if response.status_code == 200:
@@ -119,8 +119,8 @@ class UserKey:
             masked_token = tools.mask_string(self.cloud_token['private_key'][58:92], 12)
 
         ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}"
-        ret_val += f'\n{prefix}key: {masked_key}'
-        ret_val += f'\n{prefix[0:-2]}└─cloud_token: {masked_token}'
+        ret_val += f"\n{prefix}key: {masked_key}"
+        ret_val += f"\n{prefix[0:-2]}└─cloud_token: {masked_token}"
 
         return ret_val
 

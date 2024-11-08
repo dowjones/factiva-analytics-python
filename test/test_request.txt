@@ -15,7 +15,7 @@ headers_dict = {'user-key': FACTIVA_USERKEY}
 
 
 def dowload_pit_url(identifier, file_format):
-    return f'{API_HOST}{API_SNAPSHOTS_TAXONOMY_BASEPATH}{API_SNAPSHOTS_COMPANIES_PIT}/{identifier}/{file_format}'
+    return f"{API_HOST}{API_SNAPSHOTS_TAXONOMY_BASEPATH}{API_SNAPSHOTS_COMPANIES_PIT}/{identifier}/{file_format}"
 
 
 class TestRequests(unittest.TestCase):

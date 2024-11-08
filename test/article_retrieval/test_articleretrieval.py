@@ -32,8 +32,6 @@ def test_article_retrieval_env_user():
     """"
     Creates the object using the ENV variable and request the article content to the API service
     """
-    if GITHUB_CI:
-        pytest.skip("Not to be tested in GitHub Actions")
     time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     ar = ArticleRetrieval()
     article = ar.retrieve_single_article(ARTICLE_ID)
@@ -44,8 +42,6 @@ def test_article_retrieval_params_user():
     """
     Creates the object using the passed params and request the article content to the API service
     """
-    if GITHUB_CI:
-        pytest.skip("Not to be tested in GitHub Actions")
     time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     o = OAuthUser(client_id=FACTIVA_CLIENTID,
                   username=FACTIVA_USERNAME,

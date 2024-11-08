@@ -138,9 +138,9 @@ class SnapshotQuery(BulkNewsQuery):
         if detailed:
             ret_val += '\n'.join(('{}{} = {}'.format(prefix, item, pprop[item]) for item in pprop))
         else:
-            ret_val += f'{prefix}where: '
+            ret_val += f"{prefix}where: "
             ret_val += (self.where[:77] + '...') if len(self.where) > 80 else self.where
-            ret_val += f'\n{prefix}...'
+            ret_val += f"\n{prefix}..."
             del pprop['where']
             # ret_val += '\n'.join(('{}{} = {}'.format(prefix, item, pprop[item]) for item in pprop))
         return ret_val

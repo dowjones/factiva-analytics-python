@@ -245,10 +245,10 @@ class SnapshotTimeSeries(SnapshotBase):
     ):
         super().__init__(user_key=user_key, query=query, job_id=job_id)
         self.__log = log.get_factiva_logger()
-        self.__JOB_BASE_URL = f'{const.API_HOST}{const.API_ANALYTICS_BASEPATH}'
+        self.__JOB_BASE_URL = f"{const.API_HOST}{const.API_ANALYTICS_BASEPATH}"
 
         if job_id:
-            self.__log.info(f'Creating SnapshotTimeSeries instance with JobID {job_id}')
+            self.__log.info(f"Creating SnapshotTimeSeries instance with JobID {job_id}")
             self.job_response = SnapshotTimeSeriesJobReponse(job_id)
             self.get_job_response()
         elif query:
@@ -288,7 +288,7 @@ class SnapshotTimeSeries(SnapshotBase):
                 'Content-Type': 'application/json'
             }
         
-        submit_url = f'{self.__JOB_BASE_URL}'
+        submit_url = f"{self.__JOB_BASE_URL}"
         submit_payload = self.query.get_payload()
 
         response = req.api_send_request(method='POST', endpoint_url=submit_url, headers=headers_dict, payload=submit_payload)
@@ -301,9 +301,9 @@ class SnapshotTimeSeries(SnapshotBase):
             if 'errors' in response_data.keys():
                 self.job_response.errors = response_data['errors']
         elif response.status_code == 400:
-            raise ValueError(f'Invalid Query [{response.text}]')
+            raise ValueError(f"Invalid Query [{response.text}]")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         self.__log.info('submit_job End')
         return True
 
@@ -331,19 +331,19 @@ class SnapshotTimeSeries(SnapshotBase):
             'Content-Type': 'application/json'
         }
 
-        self.__log.info(f'Requesting Analytics Job info for ID {self.job_response.job_id}')
-        getinfo_url = f'{self.__JOB_BASE_URL}/{self.job_response.job_id}'
+        self.__log.info(f"Requesting Analytics Job info for ID {self.job_response.job_id}")
+        getinfo_url = f"{self.__JOB_BASE_URL}/{self.job_response.job_id}"
         response = req.api_send_request(method='GET', endpoint_url=getinfo_url, headers=headers_dict)
 
         if response.status_code == 500:
             headers_dict.update(
                 {'X-API-VERSION': '2.0'}
             )
-            self.__log.info(f'Retrying get Analytics Job info with X-API-VERSION 2.0 info for ID {self.job_response.job_id}')
+            self.__log.info(f"Retrying get Analytics Job info with X-API-VERSION 2.0 info for ID {self.job_response.job_id}")
             response = req.api_send_request(method='GET', endpoint_url=getinfo_url, headers=headers_dict)
 
         if response.status_code == 200:
-            self.__log.info(f'Job ID {self.job_response.job_id} info retrieved successfully')
+            self.__log.info(f"Job ID {self.job_response.job_id} info retrieved successfully")
             response_data = response.json()
             self.job_response.job_state = response_data['data']['attributes']['current_state']
             self.job_response.job_link = response_data['links']['self']
@@ -358,16 +358,16 @@ class SnapshotTimeSeries(SnapshotBase):
             raise RuntimeError('Job ID does not exist.')
         elif response.status_code == 400:
             detail = response_data['errors'][0]['detail']
-            raise ValueError(f'Bad Request: {detail}')
+            raise ValueError(f"Bad Request: {detail}")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         if self.job_response.download_link:
-            self.__log.info(f'Downloading TimeSeries response file from {self.job_response.download_link.split('/')[-1]}')
+            self.__log.info(f"Downloading TimeSeries response file from {self.job_response.download_link.split('/')[-1]}")
             response = req.api_send_request(method='GET', endpoint_url=self.job_response.download_link, headers=headers_dict)
             if response.status_code == 200:
                 self.job_response.data = pd.DataFrame(response.json()['data']['attributes']['results'])
             else:
-                raise RuntimeError(f'TimeSeries results file download error: [{response.text}]')
+                raise RuntimeError(f"TimeSeries results file download error: [{response.text}]")
         self.__log.info('get_job_response End')
         return True
 

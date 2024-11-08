@@ -36,7 +36,7 @@ class OAuthUser:
         from factiva.analytics import OAuthUser
         o = OAuthUser()
         headers = {
-            'Authorization': f'Bearer {o.current_jwt_token}'
+            'Authorization': f"Bearer {o.current_jwt_token}"
         }
 
     Shows the relevant properties of a ``OAuthUser`` instance.
@@ -246,13 +246,13 @@ class OAuthUser:
     def __str__(self, detailed=True, prefix='  ├─', root_prefix=''):
         masked_clientid = tools.mask_string(self._client_id)
         ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
-        ret_val += f'{prefix}client_id: {masked_clientid}\n'
-        ret_val += f'{prefix}username: {self._username}\n'
+        ret_val += f"{prefix}client_id: {masked_clientid}\n"
+        ret_val += f"{prefix}username: {self._username}\n"
         if detailed:
             masked_password = tools.mask_string(self._password)
-            ret_val += f'{prefix}password: {masked_password}\n'
-            ret_val += f'{prefix[0:-2]}└─token_status: {self.token_status}\n'
+            ret_val += f"{prefix}password: {masked_password}\n"
+            ret_val += f"{prefix[0:-2]}└─token_status: {self.token_status}\n"
         else:
-            ret_val += f'{prefix}token_status: {self.token_status}\n'
+            ret_val += f"{prefix}token_status: {self.token_status}\n"
             ret_val += f"{prefix[0:-2]}└─..."
         return ret_val

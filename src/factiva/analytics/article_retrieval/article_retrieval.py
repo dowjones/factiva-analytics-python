@@ -37,7 +37,7 @@ class ArticleRetrieval():
           |  |-...
 
     """
-    __API_RETRIEVAL_ENDPOINT_BASEURL = f'{const.API_HOST}{const.API_RETRIEVAL_ENDPOINT_BASEURL}/'
+    __API_RETRIEVAL_ENDPOINT_BASEURL = f"{const.API_HOST}{const.API_RETRIEVAL_ENDPOINT_BASEURL}/"
 
     oauth_user = None
     """
@@ -121,13 +121,13 @@ class ArticleRetrieval():
         
         # if an in self.retrieved_articles.keys():
         #     return self.retrieved_articles[an]
-        drn_ref = f'drn:archive.newsarticle.{an}'
+        drn_ref = f"drn:archive.newsarticle.{an}"
         req_headers = {
-            "Authorization": f'Bearer {self.oauth_user.current_jwt_token}'
+            "Authorization": f"Bearer {self.oauth_user.current_jwt_token}"
         }
         article_response = req.api_send_request(
             method="GET",
-            endpoint_url=f'{self.__API_RETRIEVAL_ENDPOINT_BASEURL}{drn_ref}',
+            endpoint_url=f"{self.__API_RETRIEVAL_ENDPOINT_BASEURL}{drn_ref}",
             headers=req_headers
         )
         if article_response.status_code == 200:
@@ -154,9 +154,9 @@ class ArticleRetrieval():
         child_prefix = '  │' + prefix
         ret_val = f"{root_prefix}<factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
 
-        ret_val += f'{prefix}oauth_user: '
+        ret_val += f"{prefix}oauth_user: "
         ret_val += self.oauth_user.__str__(detailed=False, prefix=child_prefix)
-        ret_val += f'\n{prefix[0:-2]}└─'
+        ret_val += f"\n{prefix[0:-2]}└─"
 
         return ret_val
 
@@ -260,14 +260,14 @@ class UIArticle():
     def __str__(self, detailed=True, prefix='  ├─', root_prefix=''):
         """Create string representation for this Class."""
         ret_val = f"{root_prefix}<factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
-        ret_val += f'{prefix}an: {self.an}\n'
-        ret_val += f'{prefix}headline: {self.headline}\n'
-        ret_val += f'{prefix}source_code: {self.source_code}\n'
-        ret_val += f'{prefix}source_name: {self.source_name}\n'
-        ret_val += f'{prefix}publication_date: {self.publication_date}\n'
-        ret_val += f'{prefix}metadata: <dict> - [{len(self.metadata.keys())}] keys\n'
-        ret_val += f'{prefix}content: <dict> - [{len(self.content.keys())}] keys\n'
-        ret_val += f'{prefix}included: <list> - [{len(self.included)}] items\n'
-        ret_val += f'{prefix[0:-2]}└─relationships: <dict> - [{len(self.relationships.keys())}] keys\n'
+        ret_val += f"{prefix}an: {self.an}\n"
+        ret_val += f"{prefix}headline: {self.headline}\n"
+        ret_val += f"{prefix}source_code: {self.source_code}\n"
+        ret_val += f"{prefix}source_name: {self.source_name}\n"
+        ret_val += f"{prefix}publication_date: {self.publication_date}\n"
+        ret_val += f"{prefix}metadata: <dict> - [{len(self.metadata.keys())}] keys\n"
+        ret_val += f"{prefix}content: <dict> - [{len(self.content.keys())}] keys\n"
+        ret_val += f"{prefix}included: <list> - [{len(self.included)}] items\n"
+        ret_val += f"{prefix[0:-2]}└─relationships: <dict> - [{len(self.relationships.keys())}] keys\n"
         return ret_val
 

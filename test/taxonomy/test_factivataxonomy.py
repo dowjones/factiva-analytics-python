@@ -32,8 +32,8 @@ def test_download_category_file():
     assert t.download_raw_category(FactivaTaxonomyCategories.INDUSTRIES, path=SAVE_PATH)
     assert t.download_raw_category(FactivaTaxonomyCategories.INDUSTRIES, path=SAVE_PATH, file_format='avro')
     try:
-        os.remove(f'{SAVE_PATH}/{FactivaTaxonomyCategories.INDUSTRIES.value}.csv')
-        os.remove(f'{SAVE_PATH}/{FactivaTaxonomyCategories.INDUSTRIES.value}.avro')
+        os.remove(f"{SAVE_PATH}/{FactivaTaxonomyCategories.INDUSTRIES.value}.csv")
+        os.remove(f"{SAVE_PATH}/{FactivaTaxonomyCategories.INDUSTRIES.value}.avro")
     except:
         pass
 

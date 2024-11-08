@@ -102,7 +102,7 @@ class SnapshotBaseQuery():
 
     def __str__(self, detailed=True, prefix='  ├─', root_prefix=''):
         ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
-        ret_val += f'{prefix}where: '
+        ret_val += f"{prefix}where: "
         ret_val += (self.where[:77] + '...') if len(self.where) > 80 else self.where
         # if detailed:
         ret_val += f"\n{prefix}includes: "

@@ -11,7 +11,7 @@ FACTIVA_USERKEY = config.load_environment_value("FACTIVA_USERKEY")
 DUMMY_KEY = 'abcd1234abcd1234abcd1234abcd1234'
 
 
-def _test_userkey_types(usr):
+def _test_accountinfo_types(usr):
     """"
     Checks the correct types were returned.
     """
@@ -36,7 +36,7 @@ def _test_userkey_types(usr):
     # Assert extractions
 
 
-def _test_userkey_values(usr):
+def _test_accountinfo_values(usr):
     """
     Checks if values within the expected lengths and ranges
     were returned
@@ -56,7 +56,7 @@ def _test_userkey_values(usr):
     assert usr.total_stream_subscriptions >= 0
     assert len(usr.enabled_company_identifiers) >= 0
 
-def test_invalid_key():
+def test_accountinfo_invalid_key():
     """
     Creates an object from the provided string and request the usage details to the API service
     The key is invalid and this should validate how the error is processed
@@ -66,28 +66,28 @@ def test_invalid_key():
         AccountInfo(DUMMY_KEY)
 
 
-def test_invald_lenght_key():
+def test_accountinfo_invald_lenght_key():
     """
     Attempts to create an object with malformed keys. This requires assert the raised exception.
     """
     with pytest.raises(ValueError, match=r'Factiva User-Key has the wrong length'):
         AccountInfo('abc')
 
-def test_userkey_with_stats():
+def test_accountinfo_with_stats():
     """"
     Creates the object using the ENV variable and request the usage details to the API service
     """
     time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     usr = AccountInfo()
-    _test_userkey_types(usr)
-    _test_userkey_values(usr)
+    _test_accountinfo_types(usr)
+    _test_accountinfo_values(usr)
 
 
-def test_user_with_parameter_and_stats():
+def test_accountinfo_with_parameter_and_stats():
     """
     API Key is passed as a string
     """
     time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     usr = AccountInfo(FACTIVA_USERKEY)
-    _test_userkey_types(usr)
-    _test_userkey_values(usr)
+    _test_accountinfo_types(usr)
+    _test_accountinfo_values(usr)

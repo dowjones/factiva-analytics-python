@@ -26,7 +26,7 @@ def _send_get_request(endpoint_url:str=const.API_HOST,
                         params=qs_params,
                         stream=stream)
     if get_response.status_code >= 400:
-        __log.error(f'GET Request Error [{get_response.status_code}]: {get_response.text}')
+        __log.error(f"GET Request Error [{get_response.status_code}]: {get_response.text}")
     return get_response
 
 @factiva_logger
@@ -42,18 +42,18 @@ def _send_post_request(endpoint_url:str=const.API_HOST,
         else:
             raise ValueError('Unexpected payload value')
 
-        __log.debug(f'POST request with payload - Start')
+        __log.debug(f"POST request with payload - Start")
         post_response = requests.post(endpoint_url, headers=headers, data=payload_str)
         if post_response.status_code >= 400:
-            __log.error(f'POST Request Error [{post_response.status_code}]: {post_response.text}')
-        __log.debug(f'POST request with Payload - End')
+            __log.error(f"POST Request Error [{post_response.status_code}]: {post_response.text}")
+        __log.debug(f"POST request with Payload - End")
         return post_response
 
-    __log.debug(f'POST request NO payload - Start')
+    __log.debug(f"POST request NO payload - Start")
     post_response = requests.post(endpoint_url, headers=headers)
     if post_response.status_code >= 400:
-        __log.error(f'POST Request Error [{post_response.status_code}]: {post_response.text}')
-    __log.debug(f'POST request NO Payload - End')
+        __log.error(f"POST Request Error [{post_response.status_code}]: {post_response.text}")
+    __log.debug(f"POST request NO Payload - End")
     return post_response
 
 @factiva_logger
@@ -81,7 +81,7 @@ def api_send_request(method:str='GET',
 
     if config.USERAGENT:
         headers.update({
-            'User-Agent': f'RDL-Python-{__version__}-{vsum}'
+            'User-Agent': f"RDL-Python-{__version__}-{vsum}"
         })
         __log.debug(f"{method} Request with User-Agent {headers['User-Agent']}")
 
@@ -146,7 +146,7 @@ def download_file(file_url:str,
     tools.create_path_if_not_exist(to_save_path)
 
     if add_timestamp:
-        file_name = f'{file_name}-{datetime.now()}'
+        file_name = f"{file_name}-{datetime.now()}"
 
     vsum = 'f4c71v4f4c71v4f4c71v4f4c71v4f4c7'
     if 'user-key' in headers:
@@ -154,7 +154,7 @@ def download_file(file_url:str,
 
     if config.USERAGENT:
         headers.update({
-            'User-Agent': f'RDL-Python-{__version__}-{vsum}'
+            'User-Agent': f"RDL-Python-{__version__}-{vsum}"
         })
 
     response = _send_get_request(endpoint_url=file_url,
@@ -162,7 +162,7 @@ def download_file(file_url:str,
                                 stream=True)
 
     local_file_name = os.path.join(to_save_path,
-                                   f'{file_name}.{file_extension}')
+                                   f"{file_name}.{file_extension}")
     with open(local_file_name, 'wb') as f:
         f.write(response.content)
 

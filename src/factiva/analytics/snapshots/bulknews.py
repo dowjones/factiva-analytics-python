@@ -60,7 +60,7 @@ class BulkNewsBase():
         user_class = str(self.user_key.__class__)
 
         ret_val = str(self.__class__) + '\n'
-        ret_val += f'  user_key = {masked_key} ({user_class})\n'
+        ret_val += f"  user_key = {masked_key} ({user_class})\n"
         ret_val += '  '.join(('{} = {}\n'.format(item, pprop[item]) for item in pprop))
         return ret_val
 
@@ -311,9 +311,9 @@ class BulkNewsJob():
             self.job_state = response_data['data']['attributes']['current_state']
             self.link = response_data['links']['self']
         elif response.status_code == 400:
-            raise ValueError(f'Invalid Query [{response.text}]')
+            raise ValueError(f"Invalid Query [{response.text}]")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         return True
 
 
@@ -355,9 +355,9 @@ class BulkNewsJob():
             raise RuntimeError('Job ID does not exist.')
         elif response.status_code == 400:
             detail = json.loads(response.text)['errors'][0]['detail']
-            raise ValueError(f'Bad Request: {detail}')
+            raise ValueError(f"Bad Request: {detail}")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         return True
 
 
@@ -425,7 +425,7 @@ class BulkNewsJob():
             with open(download_path, 'wb') as download_file_path:
                 download_file_path.write(response.content)
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         return True
 
 
@@ -456,7 +456,7 @@ class BulkNewsJob():
         if len(self.files) > 0:
             for file_uri in self.files:
                 file_name = file_uri.split('/')[-1]
-                local_path = f'{download_path}/{file_name}'
+                local_path = f"{download_path}/{file_name}"
                 self.download_file(file_uri, local_path)
         else:
             raise RuntimeError('No files available for download')
@@ -485,16 +485,16 @@ class BulkNewsJob():
             'user-key': self.user_key.key
         }
         s_param = { 'num_samples': num_samples }
-        samples_url=f'{self.get_endpoint_url()}/{self.job_id}'
+        samples_url=f"{self.get_endpoint_url()}/{self.job_id}"
         response = req.api_send_request(method='GET', endpoint_url=samples_url, headers=headers_dict, qs_params=s_param)
         if response.status_code == 200:
             resp_json = response.json()['data']['attributes']['sample']
             samples = pd.DataFrame(resp_json)
-            # print(f'DataFrame size: {samples.shape}')
-            # print(f'Columns: {samples.columns}')
+            # print(f"DataFrame size: {samples.shape}")
+            # print(f"Columns: {samples.columns}")
             return samples
         else:
-            print(f'Unexpected Response: {response.text}')
+            print(f"Unexpected Response: {response.text}")
 
 
     def __repr__(self):
@@ -509,9 +509,9 @@ class BulkNewsJob():
         ret_val = str(self.__class__) + '\n'
 
         if self.job_id == '':
-            ret_val += f'{prefix}<Empty>'
+            ret_val += f"{prefix}<Empty>"
         else:
-            ret_val += f'{prefix}user_key: '
+            ret_val += f"{prefix}user_key: "
             ret_val += self.user_key.__str__(detailed=False, prefix=child_prefix) + '\n'
             del pprop['user_key']
             

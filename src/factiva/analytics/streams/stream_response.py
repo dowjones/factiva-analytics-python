@@ -107,12 +107,12 @@ class StreamResponse:
         idents = "\t" * level
         for index_k, index_v in data.items():
             if isinstance(index_v, dict):
-                object_repr += f'{idents}{index_k}: \n{self.parse_object(index_v, level + 1)}\n'
+                object_repr += f"{idents}{index_k}: \n{self.parse_object(index_v, level + 1)}\n"
             elif isinstance(index_v, list):
                 for att in index_v:
-                    object_repr += f'{idents}{index_k}: \n{self.parse_object(att, level + 1)}\n'
+                    object_repr += f"{idents}{index_k}: \n{self.parse_object(att, level + 1)}\n"
             else:
-                object_repr += f'{idents}{index_k}: {index_v}\n'
+                object_repr += f"{idents}{index_k}: {index_v}\n"
 
         return object_repr
 

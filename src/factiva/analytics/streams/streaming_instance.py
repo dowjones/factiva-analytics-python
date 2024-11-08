@@ -37,7 +37,7 @@ class StreamingSubscription():
     def __str__(self, table=False, prefix='  ├─', root_prefix=''):
         if not table:
             ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}"
-            ret_val += f'{prefix}short_id: {self.short_id}'
+            ret_val += f"{prefix}short_id: {self.short_id}"
         else:
             ret_val = f"{prefix}{self.short_id:>8}"
         return ret_val
@@ -101,7 +101,7 @@ class StreamingQuery(SnapshotBaseQuery):
 
     def __str__(self, detailed=True, prefix='  ├─', root_prefix=''):
         ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
-        ret_val += f'{prefix}where: '
+        ret_val += f"{prefix}where: "
         ret_val += (self.where[:77] + '...') if len(self.where) > 80 else self.where
         # if detailed:
         ret_val += f"\n{prefix}includes: "
@@ -128,7 +128,7 @@ class StreamingInstance():
 
     def __init__(self, id=None, query=None, user_key=None) -> None:
         self.__log = log.get_factiva_logger()
-        self.__JOB_BASE_URL = f'{const.API_HOST}{const.API_STREAMS_BASEPATH}'
+        self.__JOB_BASE_URL = f"{const.API_HOST}{const.API_STREAMS_BASEPATH}"
         self.status = 'NOT_CREATED'
 
         self.__log.info('creating StreamingInstance...')
@@ -145,7 +145,7 @@ class StreamingInstance():
             raise ValueError("The query and id parameters cannot be assigned simultaneously")
 
         if id:
-            self.__log.info(f'Creating a StreamingInstance with ID {id}')
+            self.__log.info(f"Creating a StreamingInstance with ID {id}")
             # Considers two types of IDs:
             # - dj-synhub-stream-lufcwmlbrmmpg1p1kmq9c1ex8blcnqdu-obhztjwvqa
             # - obhztjwvqa
@@ -154,7 +154,7 @@ class StreamingInstance():
                 self.short_id = id.split('-')[-1]
             elif len(id) == 10:
                 self.short_id = id
-                self.id = f'dj-synhub-stream-{self.user_key.key.lower()}-{id}'
+                self.id = f"dj-synhub-stream-{self.user_key.key.lower()}-{id}"
             self.get_status()
         elif query:
             if isinstance(query, StreamingQuery):
@@ -217,15 +217,15 @@ class StreamingInstance():
                                        const.API_JOB_FAILED_STATE,
                                        const.API_JOB_RUNNING_STATE]):
                 if self.status not in const.API_JOB_EXPECTED_STATES:
-                    raise RuntimeError(f'Unexpected job status: {self.status}')
+                    raise RuntimeError(f"Unexpected job status: {self.status}")
                 time.sleep(const.API_JOB_ACTIVE_WAIT_SPACING)
                 self.get_status()
             if self.status in [const.API_JOB_CANCELLED_STATE, const.API_JOB_FAILED_STATE]:
-                raise RuntimeError(f'StreamingInstance creation failed with status: {self.status}')
+                raise RuntimeError(f"StreamingInstance creation failed with status: {self.status}")
         elif response.status_code == 400:
-            raise ValueError(f'Invalid Query [{response.text}]')
+            raise ValueError(f"Invalid Query [{response.text}]")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         
         self.__log.info('submit_job OK')
         return True
@@ -259,7 +259,7 @@ class StreamingInstance():
                 'Content-Type': 'application/json'
             }
         
-        status_url = f'{self.__JOB_BASE_URL}/{self.id}'
+        status_url = f"{self.__JOB_BASE_URL}/{self.id}"
         response = req.api_send_request(method='GET', endpoint_url=status_url, headers=headers_dict)
 
         if response.status_code == 200:
@@ -270,7 +270,7 @@ class StreamingInstance():
             for sub in resp_subscriptions:
                 self.subscriptions.append(StreamingSubscription(sub['id'], self.user_key))
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         
         self.__log.info('get_status OK')
         return True
