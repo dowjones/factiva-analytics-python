@@ -57,7 +57,6 @@ setup(
         'Topic :: Office/Business :: Financial :: Compliance',
         'Topic :: Office/Business :: Financial :: Trading',
         'Topic :: General :: News',
-        'Topic :: General :: Financial',
         'Topic :: General :: Investment',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
 
