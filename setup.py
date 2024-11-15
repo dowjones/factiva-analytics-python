@@ -59,7 +59,6 @@ setup(
         'Topic :: General :: News',
         'Topic :: General :: Financial',
         'Topic :: General :: Investment',
-        'Topic :: General :: Artificial Intelligence',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
 
         'License :: OSI Approved :: MIT License',
