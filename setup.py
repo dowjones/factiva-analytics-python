@@ -51,11 +51,11 @@ setup(
         'Intended Audience :: Healthcare Industry',
         'Operating System :: OS Independent',
         'Topic :: Office/Business :: News/Diary',
+        'Topic :: Office/Business :: Financial',
         'Topic :: Office/Business :: Financial :: Investment',
-        'Topic :: Office/Business :: Financial :: News',
-        'Topic :: Office/Business :: Financial :: Risk Management',
-        'Topic :: Office/Business :: Financial :: Trading',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
+        'Topic :: Scientific/Engineering :: Visualization',
+        'Topic :: Text Processing :: General',
 
         'License :: OSI Approved :: MIT License',
 
