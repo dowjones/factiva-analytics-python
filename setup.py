@@ -56,7 +56,6 @@ setup(
         'Topic :: Office/Business :: Financial :: Risk Management',
         'Topic :: Office/Business :: Financial :: Compliance',
         'Topic :: Office/Business :: Financial :: Trading',
-        'Topic :: General :: News',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
 
         'License :: OSI Approved :: MIT License',
