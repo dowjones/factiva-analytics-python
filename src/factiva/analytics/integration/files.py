@@ -7,7 +7,7 @@ from ..common import const
 class SnapshotFiles(object):
 
 
-    def read_file(self, filepath, stats_only=False, merge_body=False, all_fields=False) -> pd.DataFrame:
+    def read_avro_file(self, filepath, stats_only=False, merge_body=False, all_fields=False) -> pd.DataFrame:
         """Reads a single Dow Jones snapshot datafile
         Parameters
         ----------

@@ -313,7 +313,8 @@ class SnapshotExtraction(SnapshotBase):
         Returns
         -------
         bool
-            True if the get request was successful. An Exception otherwise.
+            True if the get request was successful. False for FAILED jobs
+            and an Exception for unexpected HTTP codes.
 
         Raises
         ------
@@ -349,6 +350,7 @@ class SnapshotExtraction(SnapshotBase):
                 self.job_response.errors = response_data['errors']
                 for err in self.job_response.errors:
                     self.__log.error(f"JobError: [{err['title']}] {err['detail']}")
+                return False
         elif response.status_code == 404:
             raise ValueError('Job ID does not exist for the provided user key.')
         elif response.status_code == 400:
@@ -433,7 +435,7 @@ class SnapshotExtraction(SnapshotBase):
         else:
             print("Job has not yet been submitted")
         self.__log.info('download_files end')
-        return False
+        return False                                                            
 
 
     @log.factiva_logger
@@ -445,13 +447,14 @@ class SnapshotExtraction(SnapshotBase):
         Returns
         -------
         bool
-            True if the extraction processing was successful. An Exception
-            otherwise.
+            True if the extraction processing was successful. False if the job
+            execution failed. An Exception otherwise.
 
         """
+        ret_val = True
         self.__log.info('process_job Start')
         self.submit_job()
-        self.get_job_response()
+        ret_val = self.get_job_response()
 
         while not (self.job_response.job_state in
                     [const.API_JOB_DONE_STATE,
@@ -460,14 +463,15 @@ class SnapshotExtraction(SnapshotBase):
             if self.job_response.job_state not in const.API_JOB_EXPECTED_STATES:
                 raise RuntimeError('Unexpected job state')
             time.sleep(const.API_JOB_ACTIVE_WAIT_SPACING)
-            self.get_job_response()
+            if(not self.get_job_response()):
+                ret_val = False
         
         if len(self.job_response.files) > 0:
             self.download_files(path=path)
         else:
             self.__log.info('No files to download. Check for error messages.')
         self.__log.info('process_job End')
-        return True
+        return ret_val
 
 
     def __repr__(self):
