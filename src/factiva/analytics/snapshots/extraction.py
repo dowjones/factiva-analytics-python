@@ -151,10 +151,22 @@ class SnapshotExtractionQuery(SnapshotBaseQuery):
         else:
             raise ValueError("Shards value is not valid")
         
-        tools.validate_type(file_format, str, "Unexpected value for file_format")
-        file_format = file_format.lower().strip()
-        tools.validate_field_options(file_format, const.API_EXTRACTION_FILE_FORMATS)
+        # tools.validate_type(file_format, str, "Unexpected value for file_format")
+        # file_format = file_format.lower().strip()
+        # tools.validate_field_options(file_format, const.API_EXTRACTION_FILE_FORMATS)
         self.file_format = file_format
+
+
+    @property
+    def file_format(self):
+        return self._file_format
+
+    @file_format.setter
+    def file_format(self, value):
+        tools.validate_type(value, str, "Unexpected value for file_format")
+        value = value.lower().strip()
+        tools.validate_field_options(value, const.API_EXTRACTION_FILE_FORMATS)
+        self._file_format = value
 
 
     def get_payload(self) -> dict:
