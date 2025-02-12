@@ -44,7 +44,7 @@ class SnapshotExplainSamplesResponse():
         return ret_val
 
     # Returns the following columns.
-    # TODO: Create methods to split multi-value fields.
+    # TODO: Create methods to split multi-value fields and dedup values.
     # ['an', 'company_codes', 'company_codes_about', 'company_codes_occur',
     #    'industry_codes', 'ingestion_datetime', 'modification_datetime',
     #    'publication_datetime', 'publisher_name', 'region_codes',
