@@ -1,6 +1,8 @@
-"""Functions to parse ArticleRetrieval JSON format"""
+"""Functions to parse ArticleFetcher JSON format"""
 
-def extract_txt(txt_dict:dict or list) -> str:
+from typing import Union
+
+def extract_txt(txt_dict: Union[dict, list]) -> str:
     hl_part = ''
 
     if isinstance(txt_dict, dict):

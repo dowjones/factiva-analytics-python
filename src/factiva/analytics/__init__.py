@@ -2,7 +2,7 @@
     Define methods and properties for tools module.
 """
 __all__ = [
-    'ArticleRetrieval', 'UIArticle',
+    'ArticleFetcher', 'UIArticle',
     'UserKey', 'OAuthUser', 'AccountInfo',
     'FactivaTaxonomy', 'FactivaTaxonomyCategories',
     'SnapshotExplain', 'SnapshotExplainQuery', 'SnapshotExplainJobResponse', 'SnapshotExplainSamplesResponse',
@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 from .__version__ import __version__
-from .article_retrieval import ArticleRetrieval, UIArticle
+from .article_fetcher import ArticleFetcher, UIArticle
 from .auth import UserKey, OAuthUser, AccountInfo
 from .taxonomy import FactivaTaxonomy, FactivaTaxonomyCategories
 from .snapshots import SnapshotExplain, SnapshotExplainQuery, SnapshotExplainJobResponse, SnapshotExplainSamplesResponse
