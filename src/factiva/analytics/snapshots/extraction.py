@@ -440,6 +440,7 @@ class SnapshotExtraction(SnapshotBase):
                 for file_uri in self.job_response.files:
                     file_name = file_uri.split('/')[-1]
                     local_path = f"{path}/{file_name}"
+                    # TODO: Create a try-catch block and retry files not downloaded
                     self.__download_extraction_file(file_uri, local_path)
             else:
                 return False
