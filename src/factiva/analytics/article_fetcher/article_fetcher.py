@@ -1,6 +1,7 @@
 """
   Classes to interact with the Article API endpoints.
 """
+import json
 from ..common import const
 from ..common import req
 from ..common import articleparser as ap
@@ -87,12 +88,14 @@ class UIArticle():
     @property
     def html(self) -> str:
         if 'logo' in self.content['sources'][0]:
-            disp_txt = f"\n<img src='{self.content['sources'][0]['logo']['size'][0]['uri']}'>"
-        disp_txt += f"\n<h1>{self.headline}<h1>"
-        disp_txt += f"\n<p style='dateline'>{self.source_name}, {self.publication_date}, {self.metadata['metrics']['word_count']} words</p>"
+            disp_txt = f"<div style='dj-logo-cont'><img style='dj-logo' src='{self.content['sources'][0]['logo']['size'][0]['uri']}' /></div>"
+        else:
+            disp_txt = ''
+        disp_txt += f"\n<p style='dj-headline'>{self.headline}</p>"
+        disp_txt += f"\n<p style='dj-dateline'>{self.source_name}, {self.publication_date}, {self.metadata['metrics']['word_count']} words</p>"
         disp_txt += ap.extract_body(self.content['body'][0], 'html')
-        disp_txt += f"\n<p style='copyright'>{ap.extract_txt(self.content['copyright'])}</p>"
-        disp_txt += f"\n<p style='docid'>Document identifier: {self.an}</p>"
+        disp_txt += f"\n<div style='dj-copyright'>{ap.extract_txt(self.content['copyright'])}</div>"
+        disp_txt += f"\n<div style='dj-docid'>Document identifier: {self.an}</div>"
         return disp_txt
 
 

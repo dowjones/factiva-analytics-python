@@ -48,7 +48,7 @@ def extract_body(body_dict:dict, format='txt') -> str:
 
     for p_item in p_list:
         if format == 'html':
-            content += "\n<p style='content'>"
+            content += "\n<p style='dj-content'>"
         content += extract_txt(p_item)
         if format == 'html':
             content += '</p>\n'
