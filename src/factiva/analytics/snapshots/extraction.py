@@ -531,7 +531,7 @@ class SnapshotExtractionListItem():
         return ret_val
 
 
-class SnapshotExtractionList():
+class SnapshotExtractionList(list):
 
     items: list[SnapshotExtractionListItem] = None
 
