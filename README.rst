@@ -11,7 +11,7 @@ The following services are currently implemented.
 * **Snapshots**: Allows to run each snapshot creation, monitoring, download and local exploration, in an individual manner. Also allows to run the whole process within a single method.
 * **Streams**: In addition to creating and getting stream details, contains the methods to easily implement a stream listener and push the content to other locations appropriate for high-available setups.
 * **Taxonomy**: Operations that return taxonomies applied to classify news content.
-* **Article Retrieval**: Allows to retrieve articles by their unique identifiers (AN) for display purposes only.
+* **ArticleFetcher**: Gets article's content by unique identifiers (AN), for display purposes only.
 
 Installation
 ============
@@ -27,7 +27,7 @@ Most Factiva Analytics services are implemented in this library. There may be a 
 
 Getting Account Information
 ---------------------------
-Create an `AccountInfo` instance that retrieves a summary of the account's basic information and usage statistics.
+Create an `AccountInfo` instance that contains a summary of the account's basic information and usage statistics.
 
 .. code-block:: python
 

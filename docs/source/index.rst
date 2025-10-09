@@ -27,7 +27,7 @@ Check out the `Dow Jones Developer Portal <https://developer.dowjones.com>`_ for
    concepts/updates
    concepts/streams
    concepts/lists
-   concepts/articleretrieval
+   concepts/articlefetech
    concepts/advancedqueries
 
 .. toctree::
@@ -40,4 +40,4 @@ Check out the `Dow Jones Developer Portal <https://developer.dowjones.com>`_ for
    factiva.analytics/snapshotexplain
    factiva.analytics/snapshottimeseries
    factiva.analytics/snapshotextraction
-   factiva.analytics/article_retrieval
+   factiva.analytics/article_fetcher

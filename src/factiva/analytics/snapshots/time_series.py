@@ -1,8 +1,10 @@
 """
   Classes to interact with the Snapshot Analytics (TimeSeries) endpoint
 """
+from io import StringIO
 import time
 import pandas as pd
+from typing import Any, Optional
 from .base import SnapshotBase, SnapshotBaseQuery, SnapshotBaseJobResponse
 from ..common import log, const, tools, req
 
@@ -27,14 +29,14 @@ class SnapshotTimeSeriesJobReponse(SnapshotBaseJobResponse):
 
     """
 
-    data : pd.DataFrame = None
-    download_link : str = None
-    errors : list[dict] = None
+    data : Optional[pd.DataFrame] = None
+    download_link : Optional[str] = None
+    errors : Optional[list[dict]] = None
     # Consider adding calculated values for start/end date and the number
     # of records
 
 
-    def __init__(self, job_id: str = None) -> None:
+    def __init__(self, job_id: str) -> None:
         super().__init__(job_id)
 
 
@@ -87,20 +89,20 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
         Max entries per group_dimension per time period unit
     """
 
-    frequency : str = None
-    date_field : str = None
-    group_dimension : str = None
-    top : int = None
+    frequency : str = const.API_MONTH_PERIOD
+    date_field : str = const.API_PUBLICATION_DATETIME_FIELD
+    group_dimension : list[Any] | str
+    top : Optional[int] = None
 
     def __init__(self,
                 where=None,
-                includes: dict = None,
-                include_lists: dict = None,
-                excludes: dict = None,
-                exclude_lists: dict = None,
+                includes: Optional[dict] = None,
+                include_lists: Optional[dict] = None,
+                excludes: Optional[dict] = None,
+                exclude_lists: Optional[dict] = None,
+                group_dimension: Optional[list[Any] | str] = None,
                 frequency: str = const.API_MONTH_PERIOD,
                 date_field:str = const.API_PUBLICATION_DATETIME_FIELD,
-                group_dimension: str = None,
                 top: int = 10):
         """
         Class constructor
@@ -145,7 +147,13 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
             Limits the dataset to return only the top X values for the dimension passed in the
             ``group_dimension`` parameter. Default 10. Can be set to -1 to return all values.
         """
-        super().__init__(where, includes, include_lists, excludes, exclude_lists)
+        super().__init__(
+            where,
+            includes if includes is not None else {},
+            include_lists if include_lists is not None else {},
+            excludes if excludes is not None else {},
+            exclude_lists if exclude_lists is not None else {}
+        )
 
         tools.validate_type(frequency, str, "Unexpected value for frequency")
         frequency = frequency.upper().strip()
@@ -163,10 +171,10 @@ class SnapshotTimeSeriesQuery(SnapshotBaseQuery):
             else:
                 raise ValueError('Group dimension is not valid')
         else:
-            self.group_dimension = None
+            self.group_dimension = []
 
         tools.validate_type(top, int, "Unexpected value for top")
-        if top >= 0:
+        if top >= -1:
             self.top = top
         else:
             raise ValueError('Top value is not valid')
@@ -234,14 +242,16 @@ class SnapshotTimeSeries(SnapshotBase):
 
     """
 
-    query : SnapshotTimeSeriesQuery = None
-    job_response : SnapshotTimeSeriesJobReponse = None
+    from typing import Optional
+
+    query : Optional[SnapshotBaseQuery] = None
+    job_response : Optional[SnapshotTimeSeriesJobReponse] = None
 
     def __init__(
         self,
         job_id=None,
         user_key=None,
-        query=None
+        query: Optional[SnapshotBaseQuery] = None
     ):
         super().__init__(user_key=user_key, query=query, job_id=job_id)
         self.__log = log.get_factiva_logger()
@@ -335,7 +345,7 @@ class SnapshotTimeSeries(SnapshotBase):
         getinfo_url = f"{self.__JOB_BASE_URL}/{self.job_response.job_id}"
         response = req.api_send_request(method='GET', endpoint_url=getinfo_url, headers=headers_dict)
 
-        if response.status_code == 500:
+        if response.status_code == 422:
             headers_dict.update(
                 {'X-API-VERSION': '2.0'}
             )
@@ -357,7 +367,7 @@ class SnapshotTimeSeries(SnapshotBase):
         elif response.status_code == 404:
             raise RuntimeError('Job ID does not exist.')
         elif response.status_code == 400:
-            detail = response_data['errors'][0]['detail']
+            detail = response.json()['errors'][0]['detail']
             raise ValueError(f"Bad Request: {detail}")
         else:
             raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
@@ -365,7 +375,9 @@ class SnapshotTimeSeries(SnapshotBase):
             self.__log.info(f"Downloading TimeSeries response file from {self.job_response.download_link.split('/')[-1]}")
             response = req.api_send_request(method='GET', endpoint_url=self.job_response.download_link, headers=headers_dict)
             if response.status_code == 200:
-                self.job_response.data = pd.DataFrame(response.json()['data']['attributes']['results'])
+                decoded_response = response.content.decode('utf-8')
+                jsonl_io = StringIO(decoded_response)
+                self.job_response.data = pd.read_json(jsonl_io, lines=True)
             else:
                 raise RuntimeError(f"TimeSeries results file download error: [{response.text}]")
         self.__log.info('get_job_response End')

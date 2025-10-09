@@ -346,7 +346,7 @@ class StreamingInstanceListItem():
         return ret_val
 
 
-class StreamingInstanceList():
+class StreamingInstanceList(list):
 
     items: list[StreamingInstanceListItem] = None
 

@@ -16,17 +16,17 @@ UserKey
 ^^^^^^^
 
 * ``FACTIVA_USERKEY``: Assigned API user key. E.g. ``abcd1234abcd1234abcd1234abcd1234``.
-    Used in all services except ArticleRetrieval.
+    Used in all services except ArticleFetcher.
 
 OAuthUser
 ^^^^^^^^^
 
 * ``FACTIVA_CLIENTID``: Assigned OAuth Client ID. E.g. ``0abcd1wxyz2abcd3wxyz4abcd5wxyz6o``.
-    Required for ArticleRetrieval.
+    Required for ArticleFetcher.
 * ``FACTIVA_USERNAME``: Assigned OAuth Username. E.g. ``0XXX000000-svcaccount@dowjones.com``.
-    Required for ArticleRetrieval.
+    Required for ArticleFetcher.
 * ``FACTIVA_PASSWORD``: Assigned OAuth Password. E.g. ``pa55WOrdpa55WOrd``.
-    Required for ArticleRetrieval.
+    Required for ArticleFetcher.
 
 
 .. _gettingstarted_envvariables_snapshots:

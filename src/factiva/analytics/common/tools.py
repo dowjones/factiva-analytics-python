@@ -14,10 +14,10 @@ def print_property(property_value, default='<NotSet>') -> str:
     elif isinstance(property_value, float):
         pval = f"{property_value:,f}"
     elif isinstance(property_value, list):
-        if(type(property_value) == list):
-            pval = f"<list> - [{len(property_value)}] elements"
-        else:
+        if(hasattr(property_value, 'items')):
             pval = f"<list> - [{len(property_value.items)}] elements"
+        else:
+            pval = f"<list> - [{len(property_value)}] elements"
     elif isinstance(property_value, pd.DataFrame):
         pval = f"<pandas.DataFrame> - [{property_value.shape[0]}] rows"
     else:

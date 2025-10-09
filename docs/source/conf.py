@@ -17,7 +17,7 @@ from datetime import date
 sys.path.insert(0, os.path.abspath('../../src'))
 sys.path.insert(0, os.path.abspath('../../src/factiva'))
 sys.path.insert(0, os.path.abspath('../../src/factiva/analytics'))
-sys.path.insert(0, os.path.abspath('../../src/factiva/analytics/article_retrieval'))
+sys.path.insert(0, os.path.abspath('../../src/factiva/analytics/article_fetcher'))
 sys.path.insert(0, os.path.abspath('../../src/factiva/analytics/auth'))
 sys.path.insert(0, os.path.abspath('../../src/factiva/analytics/common'))
 sys.path.insert(0, os.path.abspath('../../src/factiva/analytics/taxonomy'))

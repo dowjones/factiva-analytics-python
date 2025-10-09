@@ -1,6 +1,8 @@
-"""Functions to parse ArticleRetrieval JSON format"""
+"""Functions to parse ArticleFetcher JSON format"""
 
-def extract_txt(txt_dict:dict or list) -> str:
+from typing import Union
+
+def extract_txt(txt_dict: Union[dict, list]) -> str:
     hl_part = ''
 
     if isinstance(txt_dict, dict):
@@ -46,7 +48,7 @@ def extract_body(body_dict:dict, format='txt') -> str:
 
     for p_item in p_list:
         if format == 'html':
-            content += "\n<p style='content'>"
+            content += "\n<p style='dj-content'>"
         content += extract_txt(p_item)
         if format == 'html':
             content += '</p>\n'

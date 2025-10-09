@@ -16,7 +16,7 @@ If an explicit user creation is needed, the following classes can be used:
 UserKey
 -------
 
-Used by all services except the Article Retrieval Service. Usually it's not required to
+Used by all services except the Article Fetcher Service. Usually it's not required to
 be instantiated independently as the creation of a `parent` object will get the value
 from the environment.
 
@@ -39,7 +39,7 @@ class, in this case `SnapshotExplain()`.
 OAuthUser
 ---------
 
-Used by the Article Retrieval Service only. Like ``UserKey``, it is usually not required
+Used by the Article Fetcher Service only. Like ``UserKey``, it is usually not required
 to be instantiated independently. However, below code snippets can be helpful when using this
 class explicitly:
 
@@ -50,13 +50,13 @@ class explicitly:
     uname = "9ZZZ000000-svcaccount@dowjones.com"
     pwd = "pa55WOrdpa55WOrd"
     ou = OAuthUser(client_id=c_id, username=uname, password=pwd)
-    ar = ArticleRetrieval(oauth_user=ou)
+    ar = ArticleFetcher(oauth_user=ou)
     ...
 
 When using ENV variables, the above snippet requires only the constructor call from the parent
-class, in this case `ArticleRetrieval()`.
+class, in this case `ArticleFetcher()`.
 
 .. code-block:: python
 
-    from factiva.analytics import ArticleRetrieval
-    ar = ArticleRetrieval()
+    from factiva.analytics import ArticleFetcher
+    ar = ArticleFetcher()

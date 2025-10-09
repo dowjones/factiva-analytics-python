@@ -87,8 +87,9 @@ class AccountInfo:
     total_stream_instances: int = None
     total_stream_subscriptions: int = None
     enabled_company_identifiers: list = None
-    streams_list: StreamingInstanceList = None
-    extractions_list: SnapshotExtractionList = None
+    stream_jobs: StreamingInstanceList = None
+    extraction_jobs: SnapshotExtractionList = None
+    time_series_jobs: pd.DataFrame = None
 
 
     def __init__(self, user_key: UserKey | str=None):
@@ -101,6 +102,7 @@ class AccountInfo:
         self.get_stats()
         self.get_extractions()
         self.get_streams(running=False)
+        self.get_time_series()
 
 
     @property
@@ -220,13 +222,13 @@ class AccountInfo:
             if not updates:
                 extraction_df = extraction_df.loc[extraction_df.update_id.isnull()]
 
-        self.extractions_list = SnapshotExtractionList(extraction_df)
+        self.extraction_jobs = SnapshotExtractionList(extraction_df)
         self.__log.info('get_extractions ended')
-        return self.extractions_list
+        return self.extraction_jobs
 
 
     @log.factiva_logger()
-    def get_streams(self, running=True) -> pd.DataFrame:      # TODO: Change return type
+    def get_streams(self, running=True) -> StreamingInstanceList:
         """
         Retrieves the list of streams for the user.
 
@@ -281,9 +283,68 @@ class AccountInfo:
         else:
             raise RuntimeError('Unexpected Get Streams API Error')
         
-        self.streams_list = StreamingInstanceList(stream_df)
+        self.stream_jobs = StreamingInstanceList(stream_df)
         self.__log.info('get_streams ended')
         return stream_df
+
+
+
+    @log.factiva_logger()
+    def get_time_series(self) -> pd.DataFrame:      # TODO: Change return type
+        """
+        Retrieves the list of streams for the user.
+
+        Parameters
+        ----------
+        running : bool
+            Indicates whether the retrieved list should be restricted
+            to only running streams (``True`` - default) or also include
+            historical ones (``False``).
+
+        Returns
+        -------
+        pandas.DataFrame:
+            DataFrame with the list of historical extractions
+
+        """
+        self.__log.info('get_time_series started')
+        request_headers = {'user-key': self.user_key.key}
+        response = req.api_send_request(
+            method="GET",
+            endpoint_url=f"{const.API_HOST}{const.API_ANALYTICS_BASEPATH}",
+            headers=request_headers
+        )
+        if response.status_code == 200:
+            try:
+                response_data = response.json()['data']
+                if response_data == []:
+                    time_series_df = pd.DataFrame()
+                    self.__log.info('No time series jobs found.')
+                else:
+                    all_ts = []
+                    for ts_entry in response_data:
+                        new_ts = {
+                            'created_datetime': ts_entry['attributes']['date_created'],
+                            'job_id': ts_entry['id'],
+                            'job_state': ts_entry['attributes']['current_state']
+                        }
+                        all_ts.append(new_ts)
+                    
+                    time_series_df = pd.DataFrame(all_ts)
+                    time_series_df.sort_values(by='created_datetime', inplace=True, ascending=False)
+
+            except Exception as error:
+                raise AttributeError('Unexpected Get Streams API Response.') from error
+        elif response.status_code == 404:
+            stream_df = pd.DataFrame()
+        elif response.status_code == 403:
+            raise ValueError('Factiva API-Key does not exist or disabled.')
+        else:
+            raise RuntimeError('Unexpected Get Streams API Error')
+        
+        self.__log.info('get_time_series ended')
+        self.time_series_jobs = time_series_df
+        return time_series_df
 
 
     def is_active(self) -> bool:

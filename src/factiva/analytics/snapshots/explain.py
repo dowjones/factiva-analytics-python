@@ -5,6 +5,7 @@ from .base import SnapshotBase, SnapshotBaseQuery, SnapshotBaseJobResponse
 from ..common import log, const, req, tools
 import time
 import pandas as pd
+from typing import Optional
 
 
 class SnapshotExplainSamplesResponse():
@@ -21,8 +22,8 @@ class SnapshotExplainSamplesResponse():
         Pandas DataFrame with the samples dataset
 
     """
-    num_samples : int = None
-    data : pd.DataFrame = None
+    num_samples : Optional[int] = None
+    data : Optional[pd.DataFrame] = None
 
 
     def __init__(self, samples_list:list) -> None:
@@ -37,14 +38,14 @@ class SnapshotExplainSamplesResponse():
         return super().__repr__()
         
 
-    def __str__(self, prefix='  ├─', root_prefix='') -> None:
+    def __str__(self, prefix='  ├─', root_prefix='') -> str:
         ret_val = f"{root_prefix}<factiva.analytics.{str(self.__class__).split('.')[-1]}"
         ret_val += f"\n{prefix}num_samples: {tools.print_property(self.num_samples)}"
         ret_val += f"\n{prefix[0:-2]}└─data: {tools.print_property(self.data)}"
         return ret_val
 
     # Returns the following columns.
-    # TODO: Create methods to split multi-value fields.
+    # TODO: Create methods to split multi-value fields and dedup values.
     # ['an', 'company_codes', 'company_codes_about', 'company_codes_occur',
     #    'industry_codes', 'ingestion_datetime', 'modification_datetime',
     #    'publication_datetime', 'publisher_name', 'region_codes',
@@ -72,8 +73,8 @@ class SnapshotExplainJobResponse(SnapshotBaseJobResponse):
         Job execution errors returned by the API
 
     """
-    volume_estimate : int = None
-    errors : list[dict] = None
+    volume_estimate : Optional[int] = None
+    errors : Optional[list[dict]] = None
 
 
     def __repr__(self):
@@ -118,10 +119,10 @@ class SnapshotExplainQuery(SnapshotBaseQuery):
 
     def __init__(self,
                 where=None,
-                includes: dict = None,
-                include_lists: dict = None,
-                excludes: dict = None,
-                exclude_lists: dict = None):
+                includes: Optional[dict] = None,
+                include_lists: Optional[dict] = None,
+                excludes: Optional[dict] = None,
+                exclude_lists: Optional[dict] = None):
         """
         Creates a new SnapshotExplainQuery instance.
 
@@ -146,7 +147,13 @@ class SnapshotExplainQuery(SnapshotBaseQuery):
             Python dictionary with the format ``{column_name1: ['ListID1', 'listID2, ...],
             column_name2: ['listID1', 'listID2', ...]}``.
         """
-        super().__init__(where, includes, include_lists, excludes, exclude_lists)
+        super().__init__(
+            where,
+            includes if includes is not None else {},
+            include_lists if include_lists is not None else {},
+            excludes if excludes is not None else {},
+            exclude_lists if exclude_lists is not None else {}
+        )
 
 
     def get_payload(self) -> dict:
@@ -189,10 +196,10 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
     """
 
     __SAMPLES_BASEURL = f"{const.API_HOST}{const.API_EXTRACTIONS_BASEPATH}{const.API_EXTRACTIONS_SAMPLES_SUFFIX}"
-    __MAX_SAMPLES = 100
-    samples : SnapshotExplainSamplesResponse = None
-    job_response : SnapshotExplainJobResponse = None
-    query : SnapshotExplainQuery = None
+    samples : Optional[SnapshotExplainSamplesResponse] = None
+    samples : Optional[SnapshotExplainSamplesResponse] = None
+    job_response : Optional[SnapshotBaseJobResponse] = None
+    query: Optional[SnapshotBaseQuery] = None
 
     def __init__(
         self,
@@ -331,7 +338,7 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
         return True
 
 
-    def get_samples(self, num_samples:int=__MAX_SAMPLES):
+    def get_samples(self, num_samples: int = const.API_MAX_SAMPLES):
         """
         Performs a request to the API using the job ID to get its status.
 
@@ -347,9 +354,9 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
         # super().get_job_response_base()
         if (not self.job_response):
             raise RuntimeError('Job has not yet been submitted or Job ID was not set')
-        
-        if (num_samples < 1) or (num_samples > self.__MAX_SAMPLES):
-            raise ValueError(f"The n_samples value must be an integer between 1 and {self.__MAX_SAMPLES}")
+
+        if (num_samples < 1) or (num_samples > const.API_MAX_SAMPLES):
+            raise ValueError(f"The n_samples value must be an integer between 1 and {const.API_MAX_SAMPLES}")
 
         headers_dict = {
             'user-key': self.user_key.key,
