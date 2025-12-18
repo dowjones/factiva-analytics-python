@@ -36,7 +36,7 @@ class OAuthUser:
         from factiva.analytics import OAuthUser
         o = OAuthUser()
         headers = {
-            'Authorization': f'Bearer {o.current_jwt_token}'
+            'Authorization': f"Bearer {o.current_jwt_token}"
         }
 
     Shows the relevant properties of a ``OAuthUser`` instance.
@@ -45,17 +45,17 @@ class OAuthUser:
 
         from factiva.analytics import OAuthUser
         o = OAuthUser()
-        o
+        print(o)
 
     output
 
     .. code-block::
 
         <'factiva.analytics.OAuthUser'>
-        |-client_id = ****************************4Cs6
-        |-username = 9ZZZ000000-svcaccount@dowjones.com
-        |-password = ************gRk3
-        |-token_status = not_authenticated
+          ├─client_id: ****************************4Cs6
+          ├─username: 9zzz131500-svcaccount@dowjones.com
+          ├─password: ************KAHl
+          └─token_status: not_authenticated
 
     """
 
@@ -187,7 +187,8 @@ class OAuthUser:
             self._id_token = response_body['id_token']
             self._access_token = response_body['access_token']
             bearer_payload = eval(base64.b64decode(self._access_token.split('.')[1] + '==').decode('utf-8'))
-            self._id_expiration = datetime.datetime.utcfromtimestamp(int(bearer_payload['exp'])).replace(tzinfo=datetime.timezone.utc)
+            # self._id_expiration = datetime.datetime.utcfromtimestamp(int(bearer_payload['exp'])).replace(tzinfo=datetime.timezone.utc)
+            self._id_expiration = datetime.datetime.fromtimestamp(int(bearer_payload['exp']), datetime.timezone.utc)
             return True
         elif authn_response.status_code == 403:
             raise PermissionError('Invalid user credentials')
@@ -232,7 +233,8 @@ class OAuthUser:
         response_body = authz_response.json()
         self._jwt_token = response_body["access_token"]
         bearer_payload = eval(base64.b64decode(self._jwt_token.split('.')[1] + '==').decode('utf-8'))
-        self._jwt_expiration = datetime.datetime.utcfromtimestamp(int(bearer_payload['exp'])).replace(tzinfo=datetime.timezone.utc)
+        # self._jwt_expiration = datetime.datetime.utcfromtimestamp(int(bearer_payload['exp'])).replace(tzinfo=datetime.timezone.utc)
+        self._jwt_expiration = datetime.datetime.fromtimestamp(int(bearer_payload['exp']), datetime.timezone.utc)
         return True
 
 
@@ -244,13 +246,13 @@ class OAuthUser:
     def __str__(self, detailed=True, prefix='  ├─', root_prefix=''):
         masked_clientid = tools.mask_string(self._client_id)
         ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
-        ret_val += f'{prefix}client_id: {masked_clientid}\n'
-        ret_val += f'{prefix}username: {self._username}\n'
+        ret_val += f"{prefix}client_id: {masked_clientid}\n"
+        ret_val += f"{prefix}username: {self._username}\n"
         if detailed:
             masked_password = tools.mask_string(self._password)
-            ret_val += f'{prefix}password: {masked_password}\n'
-            ret_val += f'{prefix[0:-2]}└─token_status: {self.token_status}\n'
+            ret_val += f"{prefix}password: {masked_password}\n"
+            ret_val += f"{prefix[0:-2]}└─token_status: {self.token_status}\n"
         else:
-            ret_val += f'{prefix}token_status: {self.token_status}\n'
+            ret_val += f"{prefix}token_status: {self.token_status}\n"
             ret_val += f"{prefix[0:-2]}└─..."
         return ret_val

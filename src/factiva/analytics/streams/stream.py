@@ -78,7 +78,7 @@ class StreamingInstance():
     @property
     def stream_url(self) -> str:
         """List Stream's URL address."""
-        return f'{common.API_HOST}{common.API_STREAMS_BASEPATH}'
+        return f"{common.API_HOST}{common.API_STREAMS_BASEPATH}"
 
     @property
     def all_subscriptions(self) -> List[str]:
@@ -187,7 +187,7 @@ class StreamingInstance():
         if not self.stream_id:
             raise common.UNDEFINED_STREAM_ID_ERROR
 
-        uri = f'{self.stream_url}/{self.stream_id}'
+        uri = f"{self.stream_url}/{self.stream_id}"
         headers = {
                 'user-key': self.stream_user.key,
                 'content-type': 'application/json'
@@ -258,10 +258,10 @@ class StreamingInstance():
             return new_subscription.id
         except Exception as error:
             raise RuntimeError(
-                f'''
+                f"""
                 Unexpected error happened while
                 creating the subscription: {error}
-                '''
+                """
             )
 
     @factiva_logger
@@ -437,7 +437,7 @@ class StreamingInstance():
                 'user-key': self.stream_user.key,
                 'content-type': 'application/json'
             }
-        uri = f'{common.API_HOST}{common.API_SNAPSHOTS_BASEPATH}/{self.snapshot_id}/streams'
+        uri = f"{common.API_HOST}{common.API_SNAPSHOTS_BASEPATH}/{self.snapshot_id}/streams"
         response = req.api_send_request(
             method='POST',
             endpoint_url=uri,
@@ -508,27 +508,27 @@ class StreamingInstance():
         child_prefix = '  |  ' + prefix
         ret_val = str(self.__class__) + '\n'
 
-        ret_val += f'{prefix}user_key: '
+        ret_val += f"{prefix}user_key: "
         ret_val += self.user_key.__str__()
         del pprop['user_key']
         ret_val += '\n'
 
-        ret_val += f'{prefix}query: '
+        ret_val += f"{prefix}query: "
         ret_val += self.query.__str__(detailed=False, prefix=child_prefix)
         del pprop['query']
         ret_val += '\n'
 
-        ret_val += f'{prefix}last_explain_job: '
+        ret_val += f"{prefix}last_explain_job: "
         ret_val += self.last_explain_job.__str__(detailed=False, prefix=child_prefix)
         del pprop['last_explain_job']
         ret_val += '\n'
 
-        ret_val += f'{prefix}last_analytics_job: '
+        ret_val += f"{prefix}last_analytics_job: "
         ret_val += self.last_analytics_job.__str__(detailed=False, prefix=child_prefix)
         del pprop['last_analytics_job']
         ret_val += '\n'
 
-        ret_val += f'{prefix}last_extraction_job: '
+        ret_val += f"{prefix}last_extraction_job: "
         ret_val += self.last_extraction_job.__str__(detailed=False, prefix=child_prefix)
         del pprop['last_extraction_job']
         ret_val += '\n'

@@ -87,7 +87,7 @@ class FactivaTaxonomy():
 
     """
 
-    __TAXONOMY_BASEURL = f'{const.API_HOST}{const.API_SNAPSHOTS_TAXONOMY_BASEPATH}'
+    __TAXONOMY_BASEURL = f"{const.API_HOST}{const.API_SNAPSHOTS_TAXONOMY_BASEPATH}"
 
     all_subjects = None
     all_regions = None
@@ -100,7 +100,8 @@ class FactivaTaxonomy():
             self.user_key = user_key
         else:
             self.user_key = UserKey(user_key)
-        self.log= log.get_factiva_logger()
+        # self.log= log.get_factiva_logger()
+        self.__log = log.get_factiva_logger()
         self.all_subjects = None
         self.all_regions = None
         self.all_industries = None
@@ -138,7 +139,7 @@ class FactivaTaxonomy():
             from factiva.analytics import FactivaTaxonomy, FactivaTaxonomyCategories
             t = FactivaTaxonomy()
             industry_codes = t.get_category_codes(FactivaTaxonomyCategories.INDUSTRIES)
-            industry_codes
+            print(industry_codes)
 
         .. code-block::
 
@@ -165,7 +166,7 @@ class FactivaTaxonomy():
         headers_dict = {
             'user-key': self.user_key.key
         }
-        endpoint = f'{self.__TAXONOMY_BASEURL}/{category.value}/{response_format}'
+        endpoint = f"{self.__TAXONOMY_BASEURL}/{category.value}/{response_format}"
 
         response = req.api_send_request(method='GET', endpoint_url=endpoint, headers=headers_dict, stream=True)
         if response.status_code == 200:
@@ -248,7 +249,7 @@ class FactivaTaxonomy():
             raise ValueError('The file_format parameter must be either csv or avro.')
         if not path:
             path = os.getcwd()
-        endpoint = f'{self.__TAXONOMY_BASEURL}/{category.value}/{file_format}'
+        endpoint = f"{self.__TAXONOMY_BASEURL}/{category.value}/{file_format}"
         download_headers = {
             'user-key': self.user_key.key
         }
@@ -260,6 +261,7 @@ class FactivaTaxonomy():
         return True
 
 
+    @log.factiva_logger
     def lookup_code(self, code:str, category:FactivaTaxonomyCategories) -> dict:
         """
         Finds the descriptor and other details based on the provide code and
@@ -343,9 +345,9 @@ class FactivaTaxonomy():
                         return f_df.iloc[0].to_dict()
 
         # When code is not found
-        return {'error': f'Code {code} not found in {category.value}',
+        return {'error': f"Code {code} not found in {category.value}",
                 'code': 'UNKNOWN',
-                'descriptor': f'ERR: Code {code} not found in {category.value}'}
+                'descriptor': f"ERR: Code {code} not found in {category.value}"}
 
 
     def __repr__(self):
@@ -364,9 +366,9 @@ class FactivaTaxonomy():
         ret_val += f"{prefix}user_key: {self.user_key.__str__(detailed=False, prefix='  │  ├─')}\n"
 
         if detailed:
-            ret_val += '\n'.join((f'{prefix}{item}: {tools.print_property(pprop[item])}' for item in pprop))
+            ret_val += '\n'.join((f"{prefix}{item}: {tools.print_property(pprop[item])}" for item in pprop))
             ret_val += f"\n{prefix[0:-2]}└─all_companies: {tools.print_property(self.all_companies)}"
         else:
-            ret_val += f'\n{prefix[0:-2]}└─...'
+            ret_val += f"\n{prefix[0:-2]}└─..."
         return ret_val
 

@@ -37,7 +37,7 @@ class TestListenerTools(unittest.TestCase):
         stream_short_id = BASIC_SUBSCRIPTION_ID.split('-')[-3]
         action = BASIC_ADD_MESSAGE['action']
         current_hour = datetime.datetime.utcnow().strftime('%Y%m%d%H')
-        file_result = f'{stream_short_id}_{action}_{current_hour}.jsonl'
+        file_result = f"{stream_short_id}_{action}_{current_hour}.jsonl"
         assert result == True
         assert os.path.exists(
             os.path.join(const.LISTENER_FILES_DEFAULT_FOLDER, file_result)) == True

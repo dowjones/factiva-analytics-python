@@ -3,7 +3,7 @@ import datetime
 import json
 import os
 
-from factiva.core import const, factiva_logger, get_factiva_logger, tools
+from factiva.analytics import const, factiva_logger, get_factiva_logger, tools
 from google.cloud import bigquery
 from pymongo import MongoClient
 
@@ -29,7 +29,7 @@ class JSONLFileHandler:
         message : str
             Message to be write on the file
         """
-        output_filename = f'{file_prefix}_{action}_{file_suffix}.jsonl'
+        output_filename = f"{file_prefix}_{action}_{file_suffix}.jsonl"
         output_filepath = os.path.join(const.LISTENER_FILES_DEFAULT_FOLDER,
                                        output_filename)
         with open(output_filepath, mode='a', encoding='utf-8') as fp:
@@ -82,7 +82,7 @@ class JSONLFileHandler:
                                                 json.dumps(message)))
             self.counter += 1
             if self.counter % 100 == 0:
-                print(f'\n[{self.counter}]', end='')
+                print(f"\n[{self.counter}]", end='')
 
         else:
             print(const.ACTION_CONSOLE_INDICATOR[const.ERR_ACTION], end='')
@@ -243,7 +243,7 @@ class MongoDBHandler:
 
             self.counter += 1
             if self.counter % 100 == 0:
-                print(f'\n[{self.counter}]', end='')
+                print(f"\n[{self.counter}]", end='')
 
         else:
             print(const.ACTION_CONSOLE_INDICATOR[const.ERR_ACTION], end='')

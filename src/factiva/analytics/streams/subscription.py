@@ -52,7 +52,7 @@ class Subscription:
             except Exception:
                 raise common.UNDEFINED_STREAM_ID_ERROR
 
-        self.url = f'{common.API_HOST}{common.API_STREAMS_BASEPATH}'
+        self.url = f"{common.API_HOST}{common.API_STREAMS_BASEPATH}"
         self.stream_id = stream_id
         # pylint: disable=invalid-name
         self.id = id
@@ -61,7 +61,7 @@ class Subscription:
 
     def __repr__(self):
         """Create string representation for Subscription Class."""
-        return f'Subscription(id={self.id}, type={self.subscription_type})'
+        return f"Subscription(id={self.id}, type={self.subscription_type})"
 
     @factiva_logger
     def create_listener(self, user):

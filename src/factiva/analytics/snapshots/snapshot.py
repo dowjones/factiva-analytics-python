@@ -482,7 +482,7 @@ class Snapshot(BulkNewsBase):
         --------
         Process update job with type 'additions'
             >>> previous_snapshot = Snapshot(user_key=my_user, snapshot_id='sdjjekl93j')
-            >>> previous_snapshot.process_update('additions', download_path=f'./{previous_snapshot.snapshot_id}/additions/')
+            >>> previous_snapshot.process_update('additions', download_path=f"./{previous_snapshot.snapshot_id}/additions/")
 
         """
         self.last_update_job = UpdateJob(update_type=update_type, snapshot_id=self.last_extraction_job.job_id)
@@ -501,27 +501,27 @@ class Snapshot(BulkNewsBase):
         child_prefix = '  |  ' + prefix
         ret_val = str(self.__class__) + '\n'
 
-        ret_val += f'{prefix}user_key: '
+        ret_val += f"{prefix}user_key: "
         ret_val += self.user_key.__str__(detailed=False, prefix=child_prefix)
         del pprop['user_key']
         ret_val += '\n'
 
-        ret_val += f'{prefix}query: '
+        ret_val += f"{prefix}query: "
         ret_val += self.query.__str__(detailed=False, prefix=child_prefix)
         del pprop['query']
         ret_val += '\n'
 
-        ret_val += f'{prefix}last_explain_job: '
+        ret_val += f"{prefix}last_explain_job: "
         ret_val += self.last_explain_job.__str__(detailed=False, prefix=child_prefix)
         del pprop['last_explain_job']
         ret_val += '\n'
 
-        ret_val += f'{prefix}last_analytics_job: '
+        ret_val += f"{prefix}last_analytics_job: "
         ret_val += self.last_analytics_job.__str__(detailed=False, prefix=child_prefix)
         del pprop['last_analytics_job']
         ret_val += '\n'
 
-        ret_val += f'{prefix}last_extraction_job: '
+        ret_val += f"{prefix}last_extraction_job: "
         ret_val += self.last_extraction_job.__str__(detailed=False, prefix=child_prefix)
         del pprop['last_extraction_job']
         ret_val += '\n'

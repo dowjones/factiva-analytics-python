@@ -1,4 +1,5 @@
 import pytest
+import time
 import pandas as pd
 from factiva.analytics import SnapshotTimeSeries, UserKey, SnapshotTimeSeriesQuery
 from factiva.analytics.common import config, const
@@ -12,6 +13,7 @@ INVALID_WHERE_STATEMENT = "publecation_datetime >= '2023-01-01 00:00:00'"  # dat
 
 
 def test_create_from_envuser():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     sts = SnapshotTimeSeries()
     assert isinstance(sts, SnapshotTimeSeries)
     assert sts.user_key.key == ENVIRONMENT_USER_KEY
@@ -20,12 +22,12 @@ def test_create_from_envuser():
             'where': ENVIRONMENT_WHERE_STATEMENT,
             'frequency': const.API_MONTH_PERIOD,
             'date_field': const.API_PUBLICATION_DATETIME_FIELD,
-            'group_dimensions': [],
             'top': 10
         }
     }
 
 def test_create_from_user_param():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     sts = SnapshotTimeSeries(user_key=VALID_USER_KEY)
     assert isinstance(sts, SnapshotTimeSeries)
     assert sts.user_key.key == VALID_USER_KEY
@@ -34,12 +36,12 @@ def test_create_from_user_param():
             'where': ENVIRONMENT_WHERE_STATEMENT,
             'frequency': const.API_MONTH_PERIOD,
             'date_field': const.API_PUBLICATION_DATETIME_FIELD,
-            'group_dimensions': [],
             'top': 10
         }
     }
 
 def test_create_from_userkey():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     u = UserKey()
     assert isinstance(u, UserKey)
     sts = SnapshotTimeSeries(user_key=u)
@@ -50,12 +52,12 @@ def test_create_from_userkey():
             'where': ENVIRONMENT_WHERE_STATEMENT,
             'frequency': const.API_MONTH_PERIOD,
             'date_field': const.API_PUBLICATION_DATETIME_FIELD,
-            'group_dimensions': [],
             'top': 10
         }
     }
 
 def test_create_envuser_where():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     sts = SnapshotTimeSeries(query=VALID_WHERE_STATEMENT)
     assert isinstance(sts, SnapshotTimeSeries)
     assert sts.user_key.key == ENVIRONMENT_USER_KEY
@@ -64,12 +66,12 @@ def test_create_envuser_where():
             'where': VALID_WHERE_STATEMENT,
             'frequency': const.API_MONTH_PERIOD,
             'date_field': const.API_PUBLICATION_DATETIME_FIELD,
-            'group_dimensions': [],
             'top': 10
         }
     }
 
 def test_create_envuser_envwhere():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     seq = SnapshotTimeSeriesQuery()
     assert isinstance(seq, SnapshotTimeSeriesQuery)
     sts = SnapshotTimeSeries(query=seq)
@@ -80,12 +82,13 @@ def test_create_envuser_envwhere():
             'where': ENVIRONMENT_WHERE_STATEMENT,
             'frequency': const.API_MONTH_PERIOD,
             'date_field': const.API_PUBLICATION_DATETIME_FIELD,
-            'group_dimensions': [],
             'top': 10
         }
     }
 
 def test_failed_where_and_jobid():
+    if GITHUB_CI:
+        pytest.skip("Not to be tested in GitHub Actions")
     with pytest.raises(ValueError, match=r'The query and job_id parameters*'):
         sts = SnapshotTimeSeries(query=VALID_WHERE_STATEMENT, job_id='abcd1234-ab12-ab12-ab12-abcdef123456')
         assert isinstance(sts, SnapshotTimeSeries)
@@ -93,11 +96,12 @@ def test_failed_where_and_jobid():
 
 # Test operations sending requests to the API
 # These are only executed when running locally. For optimisation purposes
-# no API tests are executed in the CI/CD (GitHub Actions) environment.
+# no heavy API tests are executed in the CI/CD (GitHub Actions) environment.
 
 def test_job_envuser_envwhere():
     if GITHUB_CI:
         pytest.skip("Not to be tested in GitHub Actions")
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     sts = SnapshotTimeSeries()
     assert isinstance(sts, SnapshotTimeSeries)
     assert sts.process_job()
@@ -108,4 +112,4 @@ def test_job_envuser_envwhere():
     assert (sts.job_response.errors == None)
     assert isinstance(sts.job_response.data, pd.DataFrame)
     assert len(sts.job_response.data.columns) >= 2
-
+    assert len(sts.job_response.data) > 0

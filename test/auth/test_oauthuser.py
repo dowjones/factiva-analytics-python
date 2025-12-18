@@ -2,9 +2,11 @@
     Tests for the UserKey module
 """
 import pytest
+import time
 from factiva.analytics import OAuthUser
-from factiva.analytics.common import config
+from factiva.analytics.common import config, const
 
+GITHUB_CI = config.load_environment_value('CI', False)
 FACTIVA_CLIENTID = config.load_environment_value("FACTIVA_CLIENTID")
 FACTIVA_USERNAME = config.load_environment_value("FACTIVA_USERNAME")
 FACTIVA_PASSWORD = config.load_environment_value("FACTIVA_PASSWORD")
@@ -50,6 +52,7 @@ def test_wrong_credentials():
     Creates an object from the provided string
     The key is invalid and this should validate how the error is processed
     """
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     with pytest.raises(PermissionError, match=r'Invalid user credentials'):
         o = OAuthUser(client_id='client_id_value',
                   username='username_value',

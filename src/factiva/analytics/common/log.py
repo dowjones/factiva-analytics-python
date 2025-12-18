@@ -28,7 +28,7 @@ def get_factiva_logger():
         Path(LOGS_DEFAULT_FOLDER).mkdir(parents=True, exist_ok=True)
     logger = logging.Logger(__name__)
     logger.setLevel(FACTIVA_LOGLEVEL)
-    file_name = f'factiva-analytics-{datetime.datetime.now().strftime("%Y-%m-%d")}'
+    file_name = f"factiva-analytics-{datetime.datetime.now().strftime('%Y-%m-%d')}"
     handler = logging.FileHandler(
         f"{LOGS_DEFAULT_FOLDER}/{file_name}.log", 'a+')
     handler.setFormatter(

@@ -7,6 +7,7 @@ from .base import SnapshotBase, SnapshotBaseQuery, SnapshotBaseJobResponse
 from ..common import log, const, req, tools
 from ..auth import UserKey
 from pathlib import Path
+import pandas as pd
 
 
 class SnapshotExtractionJobReponse(SnapshotBaseJobResponse):
@@ -42,7 +43,7 @@ class SnapshotExtractionJobReponse(SnapshotBaseJobResponse):
             self.job_id = job_id
             self.short_id = job_id.split('-')[-1]
         elif (len(job_id) == 10) and (user_key):
-            self.job_id = f'dj-synhub-extraction-{user_key.key.lower()}-{job_id}'
+            self.job_id = f"dj-synhub-extraction-{user_key.key.lower()}-{job_id}"
             self.short_id = job_id
         else:
             raise ValueError('Unexpected value for job_id. If a short_id is provided, a user_key instance is needed.')
@@ -59,7 +60,7 @@ class SnapshotExtractionJobReponse(SnapshotBaseJobResponse):
         ret_val += f"\n{prefix}files: {tools.print_property(self.files)}"
         if self.errors:
             ret_val += f"\n{prefix.replace('│  ├', '   └')}errors: [{len(self.errors)}]"
-            err_list = [f"\n{prefix[0:-1]}  |-{err['title']}: {err['detail']}" for err in self.errors]
+            err_list = [f"\n{prefix.replace('│  ├', '     └')}[{err['title']}]: {err['detail']}" for err in self.errors]
             for err in err_list:
                 ret_val += err
         else:
@@ -95,6 +96,7 @@ class SnapshotExtractionQuery(SnapshotBaseQuery):
 
     file_format: str
     limit: int
+    shards: int
 
     def __init__(self,
                 where:str = None,
@@ -103,7 +105,8 @@ class SnapshotExtractionQuery(SnapshotBaseQuery):
                 excludes: dict = None,
                 exclude_lists: dict = None,
                 file_format: str = const.API_AVRO_FORMAT,
-                limit: int = 0) -> None:
+                limit: int = 0,
+                shards: int = 25) -> None:
         """
         Creates a new SnapshotExtractionQuery instance.
 
@@ -142,10 +145,28 @@ class SnapshotExtractionQuery(SnapshotBaseQuery):
         else:
             raise ValueError("Limit value is not valid or not positive")
 
-        tools.validate_type(file_format, str, "Unexpected value for file_format")
-        file_format = file_format.lower().strip()
-        tools.validate_field_options(file_format, const.API_EXTRACTION_FILE_FORMATS)
+        tools.validate_type(shards, int, "Unexpected value for limit")
+        if shards >= 25 and shards <= 10000:
+            self.shards = shards
+        else:
+            raise ValueError("Shards value is not valid")
+        
+        # tools.validate_type(file_format, str, "Unexpected value for file_format")
+        # file_format = file_format.lower().strip()
+        # tools.validate_field_options(file_format, const.API_EXTRACTION_FILE_FORMATS)
         self.file_format = file_format
+
+
+    @property
+    def file_format(self):
+        return self._file_format
+
+    @file_format.setter
+    def file_format(self, value):
+        tools.validate_type(value, str, "Unexpected value for file_format")
+        value = value.lower().strip()
+        tools.validate_field_options(value, const.API_EXTRACTION_FILE_FORMATS)
+        self._file_format = value
 
 
     def get_payload(self) -> dict:
@@ -165,6 +186,7 @@ class SnapshotExtractionQuery(SnapshotBaseQuery):
             query_dict["query"].update({"limit": self.limit})
 
         query_dict["query"].update({"format": self.file_format})
+        query_dict["query"].update({"shards": self.shards})
 
         return query_dict
 
@@ -177,6 +199,7 @@ class SnapshotExtractionQuery(SnapshotBaseQuery):
         ret_val = super().__str__(detailed, prefix, root_prefix)
         ret_val = ret_val.replace('└─', '├─')
         ret_val += f"\n{prefix}file_format: {tools.print_property(self.file_format)}"
+        ret_val += f"\n{prefix}shards: {tools.print_property(self.shards)}"
         ret_val += f"\n{prefix[0:-2]}└─limit: {tools.print_property(self.limit)}"
         return ret_val
 
@@ -222,12 +245,12 @@ class SnapshotExtraction(SnapshotBase):
 
         super().__init__(user_key, query, job_id)
         self.__log = log.get_factiva_logger()
-        self.__JOB_BASE_URL = f'{const.API_HOST}{const.API_SNAPSHOTS_BASEPATH}'
+        self.__JOB_BASE_URL = f"{const.API_HOST}{const.API_SNAPSHOTS_BASEPATH}"
 
         self.__log.info('creating SnapshotExtraction...')
 
         if job_id:
-            self.__log.info(f'Creating SnapshotExtraction instance with JobID {job_id}')
+            self.__log.info(f"Creating SnapshotExtraction instance with JobID {job_id}")
             self.job_response = SnapshotExtractionJobReponse(job_id, self.user_key)
             self.get_job_response()
         elif query:
@@ -271,7 +294,7 @@ class SnapshotExtraction(SnapshotBase):
                 'Content-Type': 'application/json'
             }
         
-        submit_url = f'{self.__JOB_BASE_URL}'
+        submit_url = f"{self.__JOB_BASE_URL}"
         submit_payload = self.query.get_payload()
 
         response = req.api_send_request(method='POST', endpoint_url=submit_url, headers=headers_dict, payload=submit_payload)
@@ -282,9 +305,9 @@ class SnapshotExtraction(SnapshotBase):
             self.job_response.job_state = response_data['data']['attributes']['current_state']
             self.job_response.job_link = response_data['links']['self']
         elif response.status_code == 400:
-            raise ValueError(f'Invalid Query [{response.text}]')
+            raise ValueError(f"Invalid Query [{response.text}]")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         
         self.__log.info('submit_job OK')
         return True
@@ -302,7 +325,8 @@ class SnapshotExtraction(SnapshotBase):
         Returns
         -------
         bool
-            True if the get request was successful. An Exception otherwise.
+            True if the get request was successful. False for FAILED jobs
+            and an Exception for unexpected HTTP codes.
 
         Raises
         ------
@@ -311,7 +335,7 @@ class SnapshotExtraction(SnapshotBase):
             is invalid.
         """
 
-        self.__log.info(f'get_job_response for ID {self.job_response.short_id}')
+        self.__log.info(f"get_job_response for ID {self.job_response.short_id}")
 
         if (not self.job_response):
             raise RuntimeError('Job has not yet been submitted or Job ID was not set')
@@ -321,26 +345,31 @@ class SnapshotExtraction(SnapshotBase):
             'Content-Type': 'application/json'
         }
 
-        getinfo_url = f'{self.__JOB_BASE_URL}/{self.job_response.job_id}'
+        getinfo_url = f"{self.__JOB_BASE_URL}/{self.job_response.job_id}"
         response = req.api_send_request(method='GET', endpoint_url=getinfo_url, headers=headers_dict)
 
         if response.status_code == 200:
-            self.__log.info(f'Job ID {self.job_response.job_id} info retrieved successfully')
+            self.__log.info(f"Job ID {self.job_response.job_id} info retrieved successfully")
             response_data = response.json()
             self.job_response.job_state = response_data['data']['attributes']['current_state']
+            self.__log.info(f"Received State: {self.job_response.job_state}")
             self.job_response.job_link = response_data['links']['self']
             if self.job_response.job_state == const.API_JOB_DONE_STATE:
                 files_obj_list = response_data['data']['attributes']['files']
                 self.job_response.files = [obj['uri'] for obj in files_obj_list]
             if 'errors' in response_data.keys():
+                self.job_response.files = []
                 self.job_response.errors = response_data['errors']
+                for err in self.job_response.errors:
+                    self.__log.error(f"JobError: [{err['title']}] {err['detail']}")
+                return False
         elif response.status_code == 404:
             raise ValueError('Job ID does not exist for the provided user key.')
         elif response.status_code == 400:
             detail = response_data['errors'][0]['detail']
-            raise ValueError(f'Bad Request: {detail}')
+            raise ValueError(f"Bad Request: {detail}")
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         self.__log.info('get_job_response OK')
         return True
 
@@ -374,7 +403,7 @@ class SnapshotExtraction(SnapshotBase):
             with open(download_path, 'wb') as download_file_path:
                 download_file_path.write(response.content)
         else:
-            raise RuntimeError(f'API request returned an unexpected HTTP status, with content [{response.text}]')
+            raise RuntimeError(f"API request returned an unexpected HTTP status, with content [{response.text}]")
         return True
 
 
@@ -401,7 +430,7 @@ class SnapshotExtraction(SnapshotBase):
             are available for download or the download failed.
 
         """
-
+        self.__log.info('download_files start')
         if self.job_response:
             if path is None:
                 path = os.path.join(os.getcwd(), self.job_response.short_id)
@@ -410,14 +439,16 @@ class SnapshotExtraction(SnapshotBase):
             if len(self.job_response.files) > 0:
                 for file_uri in self.job_response.files:
                     file_name = file_uri.split('/')[-1]
-                    local_path = f'{path}/{file_name}'
+                    local_path = f"{path}/{file_name}"
+                    # TODO: Create a try-catch block and retry files not downloaded
                     self.__download_extraction_file(file_uri, local_path)
             else:
                 return False
             return True
         else:
             print("Job has not yet been submitted")
-        return False
+        self.__log.info('download_files end')
+        return False                                                            
 
 
     @log.factiva_logger
@@ -429,13 +460,14 @@ class SnapshotExtraction(SnapshotBase):
         Returns
         -------
         bool
-            True if the extraction processing was successful. An Exception
-            otherwise.
+            True if the extraction processing was successful. False if the job
+            execution failed. An Exception otherwise.
 
         """
+        ret_val = True
         self.__log.info('process_job Start')
         self.submit_job()
-        self.get_job_response()
+        ret_val = self.get_job_response()
 
         while not (self.job_response.job_state in
                     [const.API_JOB_DONE_STATE,
@@ -444,11 +476,15 @@ class SnapshotExtraction(SnapshotBase):
             if self.job_response.job_state not in const.API_JOB_EXPECTED_STATES:
                 raise RuntimeError('Unexpected job state')
             time.sleep(const.API_JOB_ACTIVE_WAIT_SPACING)
-            self.get_job_response()
+            if(not self.get_job_response()):
+                ret_val = False
         
-        self.download_files(path=path)
+        if len(self.job_response.files) > 0:
+            self.download_files(path=path)
+        else:
+            self.__log.info('No files to download. Check for error messages.')
         self.__log.info('process_job End')
-        return True
+        return ret_val
 
 
     def __repr__(self):
@@ -459,3 +495,71 @@ class SnapshotExtraction(SnapshotBase):
         ret_val = super().__str__(detailed, prefix, root_prefix)
         ret_val = ret_val.replace('├─job_response', '└─job_response')
         return ret_val
+
+
+class SnapshotExtractionListItem():
+    
+    id: str = None
+    short_id: str = None
+    job_status: str = None
+    format: str = None
+
+    def __init__(self, id:str=None,
+                 short_id:str=None,
+                 current_state:str=None,
+                 format:str=None) -> None:
+        self.id = id
+        self.short_id = short_id
+        self.job_status = current_state
+        self.format = format
+
+
+    def __repr__(self):
+        return self.__str__()
+
+
+    def __str__(self, prefix='  ├─', root_prefix='', row=True, index=None):
+        if row:
+            if index is not None:
+                prefix = f"{prefix}[{index:<3}] "
+            ret_val = f"{prefix}{self.short_id:<12} {self.job_status:<16} {self.format:<8}\n"
+        else:
+            ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
+            ret_val += f"{prefix}short_id: {self.short_id}\n"
+            ret_val += f"{prefix}current_state: {self.job_status}\n"
+            ret_val += f"{prefix}format: {self.format}"
+        return ret_val
+
+
+class SnapshotExtractionList(list):
+
+    items: list[SnapshotExtractionListItem] = None
+
+
+    def __init__(self, df_extractions: pd.DataFrame = None) -> None:
+        self.items = []
+        if df_extractions is not None:
+            for index, row in df_extractions.iterrows():
+                self.items.append(SnapshotExtractionListItem(
+                    short_id=row['short_id'],
+                    current_state=row['current_state'],
+                    format=row['format']
+                ))
+
+
+    def __getitem__(self, index):
+        return SnapshotExtraction(self.items[index].short_id)
+
+
+    def __repr__(self):
+        return self.__str__()
+
+
+    def __str__(self, prefix='  ├─'):
+        ret_val = f"<'factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
+        ret_val += f"{prefix}     {'short_id':<12} {'job_status':<16} {'format':<8}\n"
+        for ix, item in enumerate(self.items):
+            ret_val += item.__str__(row=True, index=ix)
+        return ret_val
+    
+

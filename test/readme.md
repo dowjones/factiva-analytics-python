@@ -1,4 +1,4 @@
-# Test notes for the factiva-news Python package
+# Test notes for the factiva-analytics Python Library
 General notes that describe the context the package is expected to be tested, and other considerations.
 
 ## Runtime

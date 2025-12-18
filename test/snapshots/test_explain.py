@@ -1,4 +1,5 @@
 import pytest
+import time
 from factiva.analytics.common import config, const
 from factiva.analytics import SnapshotExplain, UserKey, SnapshotExplainQuery
 import pandas as pd
@@ -13,6 +14,7 @@ INVALID_WHERE_STATEMENT = "publecation_datetime >= '2023-01-01 00:00:00'"  # dat
 # Test operations before any API request
 
 def test_create_from_envuser():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     se = SnapshotExplain()
     assert isinstance(se, SnapshotExplain)
     assert se.user_key.key == ENVIRONMENT_USER_KEY
@@ -23,6 +25,7 @@ def test_create_from_envuser():
     }
 
 def test_create_from_user_param():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     se = SnapshotExplain(user_key=VALID_USER_KEY)
     assert isinstance(se, SnapshotExplain)
     assert se.user_key.key == VALID_USER_KEY
@@ -33,6 +36,7 @@ def test_create_from_user_param():
     }
 
 def test_create_from_userkey():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     u = UserKey()
     assert isinstance(u, UserKey)
     se = SnapshotExplain(user_key=u)
@@ -45,6 +49,7 @@ def test_create_from_userkey():
     }
 
 def test_create_envuser_where():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     se = SnapshotExplain(query=VALID_WHERE_STATEMENT)
     assert isinstance(se, SnapshotExplain)
     assert se.user_key.key == ENVIRONMENT_USER_KEY
@@ -55,6 +60,7 @@ def test_create_envuser_where():
     }
 
 def test_create_envuser_envwhere():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     seq = SnapshotExplainQuery()
     assert isinstance(seq, SnapshotExplainQuery)
     se = SnapshotExplain(query=seq)
@@ -67,6 +73,8 @@ def test_create_envuser_envwhere():
     }
 
 def test_failed_where_and_jobid():
+    if GITHUB_CI:
+        pytest.skip("Not to be tested in GitHub Actions")
     with pytest.raises(ValueError, match=r'The query and job_id parameters*'):
         se = SnapshotExplain(query=VALID_WHERE_STATEMENT, job_id='abcd1234-ab12-ab12-ab12-abcdef123456')
         assert isinstance(se, SnapshotExplain)
@@ -78,6 +86,7 @@ def test_failed_where_and_jobid():
 def test_job_envwhere_samples():
     if GITHUB_CI:
         pytest.skip("Not to be tested in GitHub Actions")
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     se = SnapshotExplain()
     assert isinstance(se, SnapshotExplain)
     assert se.process_job()

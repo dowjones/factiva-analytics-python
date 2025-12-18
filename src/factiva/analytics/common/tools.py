@@ -10,11 +10,14 @@ def print_property(property_value, default='<NotSet>') -> str:
     if isinstance(property_value, str):
         pval = property_value
     elif isinstance(property_value, int):
-        pval = f'{property_value:,d}'
+        pval = f"{property_value:,d}"
     elif isinstance(property_value, float):
-        pval = f'{property_value:,f}'
+        pval = f"{property_value:,f}"
     elif isinstance(property_value, list):
-        pval = f'<list> - [{len(property_value)}] elements'
+        if(hasattr(property_value, 'items')):
+            pval = f"<list> - [{len(property_value.items)}] elements"
+        else:
+            pval = f"<list> - [{len(property_value)}] elements"
     elif isinstance(property_value, pd.DataFrame):
         pval = f"<pandas.DataFrame> - [{property_value.shape[0]}] rows"
     else:
@@ -48,7 +51,7 @@ def validate_field_options(field, available_options):
     """
     if field not in available_options:
         raise ValueError(
-            f'Value {field} is not within the allowed options: {available_options}'
+            f"Value {field} is not within the allowed options: {available_options}"
         )
 
 
@@ -179,6 +182,6 @@ def parse_field(field, field_name):
     if isinstance(field, str):
         return eval(field)
 
-    raise ValueError(f'Unexpected value for {field_name}')
+    raise ValueError(f"Unexpected value for {field_name}")
 
 

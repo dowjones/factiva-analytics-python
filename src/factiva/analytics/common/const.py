@@ -6,28 +6,29 @@ LOGS_DEFAULT_PATH = '.factiva/logs'
 
 API_HOST = 'https://api.dowjones.com'
 API_ACCOUNT_OAUTH2_URL = 'https://accounts.dowjones.com/oauth2/v1/token'
-API_LATEST_VERSION = "2.0"
+API_LATEST_VERSION = "3.0"
 
 # UserKey
-API_ACCOUNT_BASEPATH = '/alpha/accounts'
-API_ACCOUNT_STREAM_CREDENTIALS_BASEPATH = '/accounts/streaming-credentials'
+API_ACCOUNT_BASEPATH = '/sns-accounts'
+API_ACCOUNT_STREAM_CREDENTIALS_BASEPATH = '/sns-accounts/streaming-credentials'
 
 # Dynamic Prefixes
-ALPHA_BASEPATH = '/alpha'
+# ALPHA_BASEPATH = ''
 DNA_BASEPATH = '/dna'  # Deprecated
 
 # Snapshots
-API_SNAPSHOTS_BASEPATH = '/alpha/extractions/documents'
+API_SNAPSHOTS_BASEPATH = '/extractions/documents'
 API_EXPLAIN_SUFFIX = '/_explain'
-API_ANALYTICS_BASEPATH = '/alpha/analytics'
-API_EXTRACTIONS_BASEPATH = '/alpha/extractions'
+API_ANALYTICS_BASEPATH = '/analytics'
+API_EXTRACTIONS_BASEPATH = '/extractions'
 API_EXTRACTIONS_SAMPLES_SUFFIX = '/samples'
 API_DEFAULT_EXTRACTION_TYPE = "documents"
 API_SAMPLES_EXTRACTION_TYPE = "samples"
+API_MAX_SAMPLES = 10
 
-API_SNAPSHOTS_TAXONOMY_BASEPATH = '/alpha/taxonomies'
-API_SNAPSHOTS_COMPANIES_BASEPATH = '/alpha/companies'
-API_SNAPSHOTS_COMPANY_IDENTIFIERS_BASEPATH = '/alpha/companies/identifiers'
+API_SNAPSHOTS_TAXONOMY_BASEPATH = '/taxonomies'
+API_SNAPSHOTS_COMPANIES_BASEPATH = '/companies'
+API_SNAPSHOTS_COMPANY_IDENTIFIERS_BASEPATH = '/companies/identifiers'
 API_SNAPSHOTS_COMPANIES_PIT = '/pit'
 CUSIP_COMPANY_IDENTIFIER = 'cusip'
 ISIN_COMPANY_IDENTIFIER = 'isin'
@@ -67,17 +68,17 @@ API_GROUP_DIMENSIONS_FIELDS = [
     'company_codes_about_isin', 'company_codes_about_sedol',
     'company_codes_about_ticker', 'company_codes_relevance_cusip',
     'company_codes_relevance_isin', 'company_codes_relevance_sedol',
-    'company_codes_relevance_ticker'
+    'company_codes_relevance_ticker', 'language_code'
 ]
 
 # Streams
-API_STREAMS_BASEPATH = '/alpha/streams'
+API_STREAMS_BASEPATH = '/streams'
 DOC_COUNT_EXCEEDED = "DOC_COUNT_EXCEEDED"
 CHECK_EXCEEDED_WAIT_SPACING = 300
 PUBSUB_MESSAGES_WAIT_SPACING = 10
 
-# Article Retrieval
-API_RETRIEVAL_ENDPOINT_BASEURL = '/content/refs'
+# Article API (Article Fetch)
+API_ARTICLE_ENDPOINT_BASEURL = '/content/refs'
 
 # API STATES
 API_JOB_CREATED_STATE = 'JOB_CREATED'
@@ -96,7 +97,7 @@ API_JOB_EXPECTED_STATES = [
     API_JOB_DONE_STATE, API_JOB_FAILED_STATE, API_JOB_CANCELLED_STATE
 ]
 
-API_JOB_ACTIVE_WAIT_SPACING = 10
+API_JOB_ACTIVE_WAIT_SPACING = 15
 
 # SNAPSHOT FILES
 SNAPSHOT_FILE_STATS_FIELDS = [
@@ -176,3 +177,5 @@ ACTION_CONSOLE_INDICATOR[ADD_ACTION] = '.'
 ACTION_CONSOLE_INDICATOR[REP_ACTION] = ':'
 ACTION_CONSOLE_INDICATOR[DEL_ACTION] = '&'
 ACTION_CONSOLE_INDICATOR[ERR_ACTION] = '!'
+
+TEST_REQUEST_SPACING_SECONDS = 3

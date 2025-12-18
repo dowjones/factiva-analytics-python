@@ -1,4 +1,5 @@
 import pytest
+import time
 from factiva.analytics import SnapshotExtraction, UserKey, SnapshotExtractionQuery
 from factiva.analytics.common import config, const
 
@@ -12,28 +13,33 @@ INVALID_WHERE_STATEMENT = "publecation_datetime >= '2023-01-01 00:00:00'"  # dat
 # Test operations before any API request
 
 def test_create_from_envuser():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     se = SnapshotExtraction()
     assert isinstance(se, SnapshotExtraction)
     assert se.user_key.key == ENVIRONMENT_USER_KEY
     assert se.query.get_payload() == {
         'query': {
             'where': ENVIRONMENT_WHERE_STATEMENT,
-            'format': 'avro'
+            'format': 'avro',
+            'shards': 25
         }
     }
 
 def test_create_from_user_param():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     se = SnapshotExtraction(user_key=VALID_USER_KEY)
     assert isinstance(se, SnapshotExtraction)
     assert se.user_key.key == VALID_USER_KEY
     assert se.query.get_payload() == {
         'query': {
             'where': ENVIRONMENT_WHERE_STATEMENT,
-            'format': 'avro'
+            'format': 'avro',
+            'shards': 25
         }
     }
 
 def test_create_from_userkey():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     u = UserKey()
     assert isinstance(u, UserKey)
     se = SnapshotExtraction(user_key=u)
@@ -42,22 +48,26 @@ def test_create_from_userkey():
     assert se.query.get_payload() == {
         'query': {
             'where': ENVIRONMENT_WHERE_STATEMENT,
-            'format': 'avro'
+            'format': 'avro',
+            'shards': 25
         }
     }
 
 def test_create_envuser_where():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     se = SnapshotExtraction(query=VALID_WHERE_STATEMENT)
     assert isinstance(se, SnapshotExtraction)
     assert se.user_key.key == ENVIRONMENT_USER_KEY
     assert se.query.get_payload() == {
         'query': {
             'where': VALID_WHERE_STATEMENT,
-            'format': 'avro'
+            'format': 'avro',
+            'shards': 25
         }
     }
 
 def test_create_envuser_envwhere():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     seq = SnapshotExtractionQuery()
     assert isinstance(seq, SnapshotExtractionQuery)
     se = SnapshotExtraction(query=seq)
@@ -66,11 +76,13 @@ def test_create_envuser_envwhere():
     assert se.query.get_payload() == {
         'query': {
             'where': ENVIRONMENT_WHERE_STATEMENT,
-            'format': 'avro'
+            'format': 'avro',
+            'shards': 25
         }
     }
 
 def test_failed_where_and_jobid():
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     with pytest.raises(ValueError, match=r'The query and job_id parameters*'):
         se = SnapshotExtraction(query=VALID_WHERE_STATEMENT, job_id='abcd1234-ab12-ab12-ab12-abcdef123456')
         assert isinstance(se, SnapshotExtraction)
@@ -83,7 +95,9 @@ def test_failed_where_and_jobid():
 def test_job_envuser_envwhere():
     if GITHUB_CI:
         pytest.skip("Not to be tested in GitHub Actions")
+    time.sleep(const.TEST_REQUEST_SPACING_SECONDS)
     sts = SnapshotExtraction()
+    sts.query.limit = 1000
     assert isinstance(sts, SnapshotExtraction)
     assert sts.process_job()
     assert sts.job_response.job_state == const.API_JOB_DONE_STATE

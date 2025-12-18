@@ -48,9 +48,6 @@ class SnapshotQuery(BulkNewsQuery):
         else:
             raise ValueError("Limit value is not valid or not positive")
 
-        validate_type(file_format, str, "Unexpected value for file_format")
-        file_format = file_format.lower().strip()
-        validate_field_options(file_format, const.API_EXTRACTION_FILE_FORMATS)
         self.file_format = file_format
 
         validate_type(frequency, str, "Unexpected value for frequency")
@@ -77,10 +74,24 @@ class SnapshotQuery(BulkNewsQuery):
         else:
             raise ValueError('Top value is not valid')
 
+
+    @property
+    def file_format(self):
+        return self._file_format
+
+    @file_format.setter
+    def file_format(self, value):
+        validate_type(value, str, "Unexpected value for file_format")
+        value = value.lower().strip()
+        validate_field_options(value, const.API_EXTRACTION_FILE_FORMATS)
+        self._file_format = value
+
+
     def get_explain_query(self):
         """Obtain Base Query."""
         query_dict = self.get_base_query()
         return query_dict
+
 
     def get_analytics_query(self):
         """Obtain analytics Query."""
@@ -115,6 +126,7 @@ class SnapshotQuery(BulkNewsQuery):
         query_dict["query"].update({"top": self.top})
         return query_dict
 
+
     def get_extraction_query(self):
         """Obtain the string querying Factiva."""
         query_dict = self.get_base_query()
@@ -126,9 +138,11 @@ class SnapshotQuery(BulkNewsQuery):
 
         return query_dict
 
+
     def __repr__(self):
         """Create string representation for Query Class."""
         return self.__str__()
+
 
     def __str__(self, detailed=False, prefix='  |-', root_prefix=''):
         """Create string representation for Query Class."""
@@ -138,9 +152,9 @@ class SnapshotQuery(BulkNewsQuery):
         if detailed:
             ret_val += '\n'.join(('{}{} = {}'.format(prefix, item, pprop[item]) for item in pprop))
         else:
-            ret_val += f'{prefix}where: '
+            ret_val += f"{prefix}where: "
             ret_val += (self.where[:77] + '...') if len(self.where) > 80 else self.where
-            ret_val += f'\n{prefix}...'
+            ret_val += f"\n{prefix}..."
             del pprop['where']
             # ret_val += '\n'.join(('{}{} = {}'.format(prefix, item, pprop[item]) for item in pprop))
         return ret_val
