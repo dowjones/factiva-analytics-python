@@ -65,9 +65,7 @@ jobs:
         - name: Set up Python
           uses: actions/setup-python@v5
           with:
-            python-version: '3.10.9'
-
-        # changes
+            python-version: '3.13.12'
 
         - name: Install pypa/build
           run: |
@@ -80,16 +78,6 @@ jobs:
           with:
             name: python-package-distributions
             path: dist/
-
-        # - name: Install latest pip, setuptools, twine + wheel
-        #   run: |
-        #     python -m pip install --upgrade pip setuptools wheel >> $GITHUB_STEP_SUMMARY
-            
-        # - name: Build wheels
-        #   run: |
-        #     python setup.py bdist_wheel >> $GITHUB_STEP_SUMMARY
-        #     python setup.py sdist >> $GITHUB_STEP_SUMMARY
-
 
   publish-to-testpypi:
     name: Publish 📦 to TestPyPI
@@ -116,14 +104,3 @@ jobs:
         repository-url: https://test.pypi.org/legacy/
         verbose: true
         skip-existing: true
-
-        # - name: GitHub Repo Artifact Upload
-        #   uses: actions/upload-artifact@v4
-        #   with:
-        #     name: Wheel_library
-        #     path: dist/
-            
-        # - name: Publish package to TestPyPI
-        #   uses: pypa/gh-action-pypi-publish@release/v1
-        #   with:
-        #     repository-url: https://test.pypi.org/legacy/

@@ -26,17 +26,25 @@ class FactivaTaxonomyCategories(Enum):
 
         from factiva.analytics import FactivaTaxonomyCategories
         FactivaTaxonomyCategories.SUBJECTS
+        FactivaTaxonomyCategories.SUBJECTS_HIERARCHY
         FactivaTaxonomyCategories.REGIONS
-        FactivaTaxonomyCategories.COMPANIES
+        FactivaTaxonomyCategories.REGIONS_HIERARCHY
         FactivaTaxonomyCategories.INDUSTRIES
+        FactivaTaxonomyCategories.INDUSTRIES_HIERARCHY
+        FactivaTaxonomyCategories.COMPANIES
         FactivaTaxonomyCategories.EXECUTIVES
+        FactivaTaxonomyCategories.SOURCES
 
     """
-    SUBJECTS = 'hierarchySubject'
-    REGIONS = 'hierarchyRegion'
-    INDUSTRIES = 'hierarchyIndustry'
+    SUBJECTS_HIERARCHY = 'hierarchySubject'
+    SUBJECTS = 'news_subjects'
+    REGIONS_HIERARCHY = 'hierarchyRegion'
+    REGIONS = 'regions'
+    INDUSTRIES_HIERARCHY = 'hierarchyIndustry'
+    INDUSTRIES = 'industries'
     COMPANIES = 'companies'
     EXECUTIVES = 'executives'
+    SOURCES = 'sources'
 
 
 class FactivaTaxonomy():
@@ -245,11 +253,14 @@ class FactivaTaxonomy():
         if not isinstance(file_format, str):
             raise ValueError('The file_format parameter must be a string')
         file_format = file_format.lower()
-        if file_format not in ['csv', 'avro']:
-            raise ValueError('The file_format parameter must be either csv or avro.')
+        if file_format not in ['csv', 'avro', 'json']:
+            raise ValueError('The file_format parameter must be either csv, avro, or json.')
         if not path:
             path = os.getcwd()
-        endpoint = f"{self.__TAXONOMY_BASEURL}/{category.value}/{file_format}"
+        if category.value in [FactivaTaxonomyCategories.COMPANIES, FactivaTaxonomyCategories.REGIONS]:
+            endpoint = f"{self.__TAXONOMY_BASEURL}/{category.value}/{file_format}?extended=true"
+        else:
+            endpoint = f"{self.__TAXONOMY_BASEURL}/{category.value}/{file_format}"
         download_headers = {
             'user-key': self.user_key.key
         }
