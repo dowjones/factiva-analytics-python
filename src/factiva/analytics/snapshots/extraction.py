@@ -132,7 +132,7 @@ class SnapshotExtractionQuery(SnapshotBaseQuery):
             column_name2: ['listID1', 'listID2', ...]}``.
         file_format : str, optional
             Preferred format for the generated files in the extraction operation.
-            Possible values are 'AVRO' (default), 'JSON' and 'CSV'.
+            Possible values are 'avro' (default), 'parquet' 'json' and 'csv'.
         limit : int, optional
             Max article limit for the extraction operation. Recommended for test only.
             Full extractions and updates will be affected by this parameter.
